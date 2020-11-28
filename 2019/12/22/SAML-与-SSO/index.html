@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>SAML 与 SSO | タチコマの部屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="SSO 与 SAML在谈论单点登录系统（SSO）实现的时候，我们做技术选型，最常听到的两个方案是SAML与OAuth。得益于现在各互联网大厂的推广，OAuth的概念在这几年深入人心，几乎是SSO的首选方案。但是在OAuth还没兴起的年代，想要快速搭建一套符合业界标准的SSO系统，SAML基本上是唯一选择了。所以在众多历史悠久的企业级应用里，SAML仍然占据着SSO服务的半壁江山。OAuth 之前已">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAML 与 SSO">
+<meta property="og:url" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/index.html">
+<meta property="og:site_name" content="タチコマの部屋">
+<meta property="og:description" content="SSO 与 SAML在谈论单点登录系统（SSO）实现的时候，我们做技术选型，最常听到的两个方案是SAML与OAuth。得益于现在各互联网大厂的推广，OAuth的概念在这几年深入人心，几乎是SSO的首选方案。但是在OAuth还没兴起的年代，想要快速搭建一套符合业界标准的SSO系统，SAML基本上是唯一选择了。所以在众多历史悠久的企业级应用里，SAML仍然占据着SSO服务的半壁江山。OAuth 之前已">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/1.gif">
+<meta property="og:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/2.gif">
+<meta property="og:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/3.png">
+<meta property="og:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/4.png">
+<meta property="og:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/5.png">
+<meta property="og:updated_time" content="2020-11-28T09:20:52.738Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SAML 与 SSO">
+<meta name="twitter:description" content="SSO 与 SAML在谈论单点登录系统（SSO）实现的时候，我们做技术选型，最常听到的两个方案是SAML与OAuth。得益于现在各互联网大厂的推广，OAuth的概念在这几年深入人心，几乎是SSO的首选方案。但是在OAuth还没兴起的年代，想要快速搭建一套符合业界标准的SSO系统，SAML基本上是唯一选择了。所以在众多历史悠久的企业级应用里，SAML仍然占据着SSO服务的半壁江山。OAuth 之前已">
+<meta name="twitter:image" content="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/1.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="タチコマの部屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">タチコマの部屋</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://tachikomachann.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-SAML-与-SSO" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/12/22/SAML-与-SSO/" class="article-date">
+  <time datetime="2019-12-22T12:09:36.000Z" itemprop="datePublished">2019-12-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SAML 与 SSO
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="SSO-与-SAML"><a href="#SSO-与-SAML" class="headerlink" title="SSO 与 SAML"></a>SSO 与 SAML</h2><p>在谈论单点登录系统（SSO）实现的时候，我们做技术选型，最常听到的两个方案是SAML与OAuth。得益于现在各互联网大厂的推广，OAuth的概念在这几年深入人心，几乎是SSO的首选方案。但是在OAuth还没兴起的年代，想要快速搭建一套符合业界标准的SSO系统，SAML基本上是唯一选择了。所以在众多历史悠久的企业级应用里，SAML仍然占据着SSO服务的半壁江山。<br>OAuth 之前已经了解的听清楚了，今天稍微总结一下SAML。</p>
+<h2 id="SAML-的一些概念"><a href="#SAML-的一些概念" class="headerlink" title="SAML 的一些概念"></a>SAML 的一些概念</h2><h3 id="SP-与-IdP"><a href="#SP-与-IdP" class="headerlink" title="SP 与 IdP"></a>SP 与 IdP</h3><p>SAML 中分为SP（service provider）与IdP（identity provider）两个角色。SP属于为用户提供各种业务服务的应用，IdP属于提供用户登录认证的应用。<br><img src="1.gif" alt="SAML SSO flow"><br>上面这张图摘自Oasis官方网站上SAML的说明，其中<code>hotels.example.ca</code>就是IdP,当其他两个SP应用需要用户登录时，就会重定向到它这边做登录认证，然后重定向回SP。<br>详细的认证流程可以参考Oasis官网上的<a href="http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#3.3.Identity%20Federation%20Use%20Case|outline" target="_blank" rel="noopener">3.3 Identity Federation Use Case</a>对该流程的说明</p>
+<h3 id="SAML的XML文档结构"><a href="#SAML的XML文档结构" class="headerlink" title="SAML的XML文档结构"></a>SAML的XML文档结构</h3><p><img src="2.gif" alt="SAML Architecture"><br>上图阐述了传输SAML数据时用到的一些概念。其中Assertions就是传输中具体的用户认证数据，用XML组织。Protocols是Assertions所承载的协议，SAML定义了多种协议，一般常用的是Authentication Request Protocol。Binding定义了idP与SP之间通信的方式（HTTP POST Binding或者SOAP等）。Profiles定义了使用SAML时一些最基础的信息，一般做SSO单点登录时，Profiles是相对固定的。<br>对于SAML的XML文档中每个属性用途的说明，其实一开始不必过于详细地了解，由于概念太多，很容易收到打击。可以先快速过一遍OASIS网站上的说明，然后挑一种认证流程详细了解一下各请求报文。</p>
+<h2 id="Web-Broswer-SSO-Profile"><a href="#Web-Broswer-SSO-Profile" class="headerlink" title="Web Broswer SSO Profile"></a>Web Broswer SSO Profile</h2><p>常见web应用基于SAML的SSO实现一般使用的就是Web Broswer SSO Profile。它包含两种flow:<br>SP-initiated web SSO flow 和 IdP-initiated web SSO flow ，从字面上就很容易理解，一种是SP发起的，一种是IdP发起的。SP-initiated web SSO flow 又分为两种： Redirect/POST Bindings 和 POST/Artifact Bindings。</p>
+<h3 id="SP-Initiated-SSO-Redirect-POST-Bindings"><a href="#SP-Initiated-SSO-Redirect-POST-Bindings" class="headerlink" title="SP-Initiated SSO: Redirect/POST Bindings"></a>SP-Initiated SSO: Redirect/POST Bindings</h3><p><img src="3.png" alt="Redirect/POST Bindings"><br>流程说明摘抄自OASIS，挺清楚的，就不翻译了：</p>
+<ol>
+<li>The user attempts to access a resource on sp.example.com. The user does not have a valid logon session (i.e. security context) on this site. The SP saves the requested resource URL in local state information that can be saved across the web SSO exchange.</li>
+<li><p>The SP sends an HTML form back to the browser in the HTTP response (HTTP status 200). The HTML FORM contains a SAML <authnrequest> message encoded as the value of a hidden form control named SAMLRequest.</authnrequest></p>
+<pre><code>&lt;form method=&quot;post&quot; action=&quot;https://idp.example.org/SAML2/SSO/POST&quot; ...&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;SAMLRequest&quot; value=&quot;request&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;RelayState&quot; value=&quot;token&quot; /&gt;
+    ...
+    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+&lt;/form&gt;
+</code></pre><p> The <strong>RelayState</strong> token is an opaque reference to state information maintained at the service provider. (The <strong>RelayState</strong> mechanism can leak details of the user’s activities at the SP to the IdP and so the SP should take care in its implementation to protect the user’s privacy.) The value of the <strong>SAMLRequest</strong> parameter is the base64 encoding of the following <a href="samlp:AuthnRequest" target="_blank" rel="noopener"><code>samlp:AuthnRequest</code></a> element:</p>
+<pre><code>&lt;samlp:AuthnRequest
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:21:59Z&quot;
+    AssertionConsumerServiceIndex=&quot;1&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+    &lt;samlp:NameIDPolicy
+        AllowCreate=&quot;true&quot;
+        Format=&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:transient&quot;/&gt;
+&lt;/samlp:AuthnRequest&gt;
+</code></pre><p> For ease-of-use purposes, the HTML FORM typically will be accompanied by script code that will automatically post the form to the destination site (which is the IdP in this case). The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the identity provider’s Single Sign-On Service.</p>
+<pre><code>POST /SAML2/SSO/POST HTTP/1.1
+Host: idp.example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: nnn
+SAMLRequest=request&amp;RelayState=token
+</code></pre></li>
+<li><p>The Single Sign-On Service determines whether the user has an existing logon security context at the identity provider that meets the default or requested authentication policy requirements. If not, the IdP interacts with the browser to challenge the user to provide valid credentials.</p>
+</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The IdP Single Sign-On Service issues a SAML assertion representing the user’s logon security context and places the assertion within a SAML <code>&lt;Response&gt;</code> message. Since the HTTP Artifact binding will be used to deliver the SAML Response message, <strong>it is not mandated that the assertion be digitally signed.</strong> The IdP creates an artifact containing the source ID for the <code>idp.example.org</code> site and a reference to the <code>&lt;Response&gt;</code> message (the <strong>MessageHandle</strong>). The HTTP Artifact binding allows the choice of either HTTP redirection or an HTML form POST as the mechanism to deliver the artifact to the partner. The figure shows the use of redirection.</li>
+<li><p>The SP’s Assertion Consumer Service now sends a SAML <code>&lt;ArtifactResolve&gt;</code> message containing the artifact to the IdP’s Artifact Resolution Service endpoint. This exchange is <strong>performed using a synchronous SOAP message exchange.</strong></p>
+<pre><code>&lt;samlp:ArtifactResolve
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:04Z&quot;
+    Destination=&quot;https://idp.example.org/SAML2/ArtifactResolution&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- an ArtifactResolve message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Artifact&gt;artifact&lt;/samlp:Artifact&gt;
+&lt;/samlp:ArtifactResolve&gt;
+</code></pre></li>
+<li><p>The IdP’s Artifact Resolution Service extracts the <strong>MessageHandle</strong> from the artifact and locates the original SAML <code>&lt;Response&gt;</code> message associated with it. This message is then placed inside a SAML <code>&lt;ArtifactResponse&gt;</code> message, which is returned to the SP over the SOAP channel.</p>
+<pre><code>&lt;samlp:ArtifactResponse
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    ID=&quot;identifier_3&quot;
+    InResponseTo=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+&lt;!-- an ArtifactResponse message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Status&gt;
+    &lt;samlp:StatusCode
+        Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+&lt;/samlp:Status&gt;
+&lt;samlp:Response
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_4&quot;
+    InResponseTo=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;
+    Destination=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;&gt;
+    &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+    &lt;ds:Signature
+        xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+    &lt;samlp:Status&gt;
+        &lt;samlp:StatusCode
+            Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+    &lt;/samlp:Status&gt;
+    &lt;saml:Assertion
+        xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+        ID=&quot;identifier_5&quot;
+        Version=&quot;2.0&quot;
+        IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+        &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- a Subject element is required --&gt;
+&lt;saml:Subject&gt;
+    &lt;saml:NameID
+        Format=&quot;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&quot;&gt;
+        user@mail.example.org
+    &lt;/saml:NameID&gt;
+    &lt;saml:SubjectConfirmation
+        Method=&quot;urn:oasis:names:tc:SAML:2.0:cm:bearer&quot;&gt;
+        &lt;saml:SubjectConfirmationData
+            InResponseTo=&quot;identifier_1&quot;
+            Recipient=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;
+            NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;/&gt;
+    &lt;/saml:SubjectConfirmation&gt;
+&lt;/saml:Subject&gt;
+&lt;saml:Conditions
+    NotBefore=&quot;2004-12-05T09:17:05Z&quot;
+    NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;&gt;
+    &lt;saml:AudienceRestriction&gt;
+        &lt;saml:Audience&gt;https://sp.example.com/SAML2&lt;/saml:Audience&gt;
+    &lt;/saml:AudienceRestriction&gt;
+&lt;/saml:Conditions&gt;
+&lt;saml:AuthnStatement
+    AuthnInstant=&quot;2004-12-05T09:22:00Z&quot;
+    SessionIndex=&quot;identifier_5&quot;&gt;
+    &lt;saml:AuthnContext&gt;
+        &lt;saml:AuthnContextClassRef&gt;
+            urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+        &lt;/saml:AuthnContextClassRef&gt;
+    &lt;/saml:AuthnContext&gt;
+&lt;/saml:AuthnStatement&gt;
+&lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;
+&lt;/samlp:ArtifactResponse&gt;
+</code></pre><p> The SP extracts and processes the <code>&lt;Response&gt;</code> message and then processes the embedded assertion in order to create a local logon security context for the user at the SP. Once this is completed, the SP retrieves the local state information indicated by the <strong>RelayState</strong> data to recall the originally-requested resource URL. It then sends an HTTP redirect response to the browser directing it to access the originally requested resource (not shown).</p>
+</li>
+<li><p>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</p>
+</li>
+</ol>
+<h3 id="SP-Initiated-SSO-POST-Artifact-Bindings"><a href="#SP-Initiated-SSO-POST-Artifact-Bindings" class="headerlink" title="SP-Initiated SSO: POST/Artifact Bindings"></a>SP-Initiated SSO: POST/Artifact Bindings</h3><p><img src="4.png" alt="POST/Artifact Bindings"></p>
+<ol>
+<li>The user attempts to access a resource on sp.example.com. The user does not have a valid logon session (i.e. security context) on this site. The SP saves the requested resource URL in local state information that can be saved across the web SSO exchange.</li>
+<li><p>The SP sends an HTML form back to the browser in the HTTP response (HTTP status 200). The HTML FORM contains a SAML <authnrequest> message encoded as the value of a hidden form control named SAMLRequest.</authnrequest></p>
+<pre><code>&lt;form method=&quot;post&quot; action=&quot;https://idp.example.org/SAML2/SSO/POST&quot; ...&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;SAMLRequest&quot; value=&quot;request&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;RelayState&quot; value=&quot;token&quot; /&gt;
+    ...
+    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+&lt;/form&gt;
+</code></pre><p> The <strong>RelayState</strong> token is an opaque reference to state information maintained at the service provider. (The <strong>RelayState</strong> mechanism can leak details of the user’s activities at the SP to the IdP and so the SP should take care in its implementation to protect the user’s privacy.) The value of the <strong>SAMLRequest</strong> parameter is the base64 encoding of the following <a href="samlp:AuthnRequest" target="_blank" rel="noopener"><code>samlp:AuthnRequest</code></a> element:</p>
+<pre><code>&lt;samlp:AuthnRequest
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:21:59Z&quot;
+    AssertionConsumerServiceIndex=&quot;1&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+    &lt;samlp:NameIDPolicy
+        AllowCreate=&quot;true&quot;
+        Format=&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:transient&quot;/&gt;
+&lt;/samlp:AuthnRequest&gt;
+</code></pre><p> For ease-of-use purposes, the HTML FORM typically will be accompanied by script code that will automatically post the form to the destination site (which is the IdP in this case). The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the identity provider’s Single Sign-On Service.</p>
+<pre><code>POST /SAML2/SSO/POST HTTP/1.1
+Host: idp.example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: nnn
+SAMLRequest=request&amp;RelayState=token
+</code></pre></li>
+<li><p>The Single Sign-On Service determines whether the user has an existing logon security context at the identity provider that meets the default or requested authentication policy requirements. If not, the IdP interacts with the browser to challenge the user to provide valid credentials.</p>
+</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The IdP Single Sign-On Service issues a SAML assertion representing the user’s logon security context and places the assertion within a SAML <code>&lt;Response&gt;</code> message. Since the HTTP Artifact binding will be used to deliver the SAML Response message, <strong>it is not mandated that the assertion be digitally signed.</strong> The IdP creates an artifact containing the source ID for the <code>idp.example.org</code> site and a reference to the <code>&lt;Response&gt;</code> message (the <strong>MessageHandle</strong>). The HTTP Artifact binding allows the choice of either HTTP redirection or an HTML form POST as the mechanism to deliver the artifact to the partner. The figure shows the use of redirection.</li>
+<li><p>The SP’s Assertion Consumer Service now sends a SAML <code>&lt;ArtifactResolve&gt;</code> message containing the artifact to the IdP’s Artifact Resolution Service endpoint. This exchange is <strong>performed using a synchronous SOAP message exchange.</strong></p>
+<pre><code>&lt;samlp:ArtifactResolve
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:04Z&quot;
+    Destination=&quot;https://idp.example.org/SAML2/ArtifactResolution&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- an ArtifactResolve message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Artifact&gt;artifact&lt;/samlp:Artifact&gt;
+&lt;/samlp:ArtifactResolve&gt;
+</code></pre></li>
+<li><p>The IdP’s Artifact Resolution Service extracts the <strong>MessageHandle</strong> from the artifact and locates the original SAML <code>&lt;Response&gt;</code> message associated with it. This message is then placed inside a SAML <code>&lt;ArtifactResponse&gt;</code> message, which is returned to the SP over the SOAP channel.</p>
+<pre><code>&lt;samlp:ArtifactResponse
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    ID=&quot;identifier_3&quot;
+    InResponseTo=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+&lt;!-- an ArtifactResponse message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Status&gt;
+    &lt;samlp:StatusCode
+        Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+&lt;/samlp:Status&gt;
+&lt;samlp:Response
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_4&quot;
+    InResponseTo=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;
+    Destination=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;&gt;
+    &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+    &lt;ds:Signature
+        xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+    &lt;samlp:Status&gt;
+        &lt;samlp:StatusCode
+            Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+    &lt;/samlp:Status&gt;
+    &lt;saml:Assertion
+        xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+        ID=&quot;identifier_5&quot;
+        Version=&quot;2.0&quot;
+        IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+        &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- a Subject element is required --&gt;
+&lt;saml:Subject&gt;
+    &lt;saml:NameID
+        Format=&quot;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&quot;&gt;
+        user@mail.example.org
+    &lt;/saml:NameID&gt;
+    &lt;saml:SubjectConfirmation
+        Method=&quot;urn:oasis:names:tc:SAML:2.0:cm:bearer&quot;&gt;
+        &lt;saml:SubjectConfirmationData
+            InResponseTo=&quot;identifier_1&quot;
+            Recipient=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;
+            NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;/&gt;
+    &lt;/saml:SubjectConfirmation&gt;
+&lt;/saml:Subject&gt;
+&lt;saml:Conditions
+    NotBefore=&quot;2004-12-05T09:17:05Z&quot;
+    NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;&gt;
+    &lt;saml:AudienceRestriction&gt;
+        &lt;saml:Audience&gt;https://sp.example.com/SAML2&lt;/saml:Audience&gt;
+    &lt;/saml:AudienceRestriction&gt;
+&lt;/saml:Conditions&gt;
+&lt;saml:AuthnStatement
+    AuthnInstant=&quot;2004-12-05T09:22:00Z&quot;
+    SessionIndex=&quot;identifier_5&quot;&gt;
+    &lt;saml:AuthnContext&gt;
+        &lt;saml:AuthnContextClassRef&gt;
+            urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+        &lt;/saml:AuthnContextClassRef&gt;
+    &lt;/saml:AuthnContext&gt;
+&lt;/saml:AuthnStatement&gt;
+&lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;
+&lt;/samlp:ArtifactResponse&gt;
+</code></pre><p> The SP extracts and processes the <code>&lt;Response&gt;</code> message and then processes the embedded assertion in order to create a local logon security context for the user at the SP. Once this is completed, the SP retrieves the local state information indicated by the <strong>RelayState</strong> data to recall the originally-requested resource URL. It then sends an HTTP redirect response to the browser directing it to access the originally requested resource (not shown).</p>
+</li>
+<li><p>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</p>
+</li>
+</ol>
+<h3 id="两个-SP-Initiated-flow-有什么区别？"><a href="#两个-SP-Initiated-flow-有什么区别？" class="headerlink" title="两个 SP-Initiated flow 有什么区别？"></a>两个 SP-Initiated flow 有什么区别？</h3><p>OASIS网站上并没有说为什么要这两种flow。上图两者最明显的区别是SP对IdP的response验证方式，一种不走服务端，一种通过SOAP进行了一次服务端通信。我觉得可能是为了满足不同实现方的条件，毕竟不是所有实现方都有证书，可以对XML进行加签和校验，所以只能再走一次服务端通信。</p>
+<h3 id="IdP-initiated-web-SSO-flow"><a href="#IdP-initiated-web-SSO-flow" class="headerlink" title="IdP-initiated web SSO flow"></a>IdP-initiated web SSO flow</h3><p><img src="5.png" alt="IdP-initiated web SSO flow"></p>
+<p>IdP-initiated web SSO flow 跟 SP-Initiated flow 比较类似了，只是发起端在IdP:</p>
+<ol>
+<li>If the user does not have a valid local security context at the IdP, at some point the user will be challenged to supply their credentials to the IdP site, <code>idp.example.org</code>.</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The user selects a menu option or link on the IdP to request access to an SP web site, <code>sp.example.com</code>. This causes the IdP’s Single Sign-On Service to be called.</li>
+<li>The Single Sign-On Service builds a SAML assertion representing the user’s logon security context. Since a POST binding is going to be used, the assertion is digitally signed before it is placed within a SAML <code>&lt;Response&gt;</code> message. The <code>&lt;Response&gt;</code> message is then placed within an HTML FORM as a hidden form control named <strong>SAMLResponse</strong>. (If the convention for identifying a specific application resource at the SP is supported at the IdP and SP, the resource URL at the SP is also encoded into the form using a hidden form control named <strong>RelayState</strong>.) The Single Sign-On Service sends the HTML form back to the browser in the HTTP response. For ease-of-use purposes, the HTML FORM typically will contain script code that will automatically post the form to the destination site.</li>
+<li>The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the SP’s Assertion Consumer Service. The service provider’s Assertion Consumer Service obtains the <code>&lt;Response&gt;</code> message from the HTML FORM for processing. The digital signature on the SAML assertion must first be validated and then the assertion contents are processed in order to create a local logon security context for the user at the SP. Once this completes, the SP retrieves the <strong>RelayState</strong> data (if any) to determine the desired application resource URL and sends an HTTP redirect response to the browser directing it to access the requested resource (not shown).</li>
+<li>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</li>
+</ol>
+<h2 id="SAML-VS-OAuth"><a href="#SAML-VS-OAuth" class="headerlink" title="SAML VS OAuth"></a>SAML VS OAuth</h2><p>最后比较一下SAML与OAuth的区别。<br>SAML 有更多面向企业级的认证授权配置选项，定制化程度高。一旦SP和IdP实现了SAML协议，接入对方只需要对系统进行配置导入和一些简单的配置，基本不会有另外开发工作。所以SAML更适合各种异构的系统组合，特别是那种需要与外部系统（没有源码，无法控制对方行为）对接的情况。<br>OAuth出现比SAML晚得多，目的是为了方便的做互联网应用之间的授权。它在技术实现上更新，更简单，对互联网应用，移动应用更友好。接入需要一定开发工作。OAuth 是授权（Authorization）协议，不是认证（Authentication）协议，只是某些情况下可以用作登陆认证。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#1.Introduction|outline" target="_blank" rel="noopener">OASIS SAML介绍页</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/" data-id="cki1s49r1000bbkuc8jfjmcp6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/11/28/用树莓派4B组件简易NAS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          用树莓派4B组件简易NAS
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/11/05/写在三十岁的时候/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">写在三十岁的时候</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nas/">nas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树莓派/">树莓派</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/nas/" style="font-size: 10px;">nas</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/web/" style="font-size: 10px;">web</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/树莓派/" style="font-size: 10px;">树莓派</a> <a href="/tags/随笔/" style="font-size: 15px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/11/28/用树莓派4B组件简易NAS/">用树莓派4B组件简易NAS</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/22/SAML-与-SSO/">SAML 与 SSO</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/05/写在三十岁的时候/">写在三十岁的时候</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/16/Java-多线程笔记/">Java 多线程笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/05/Java-NIO-笔记/">Java NIO 笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Tachikoma<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Effective Java 3rd edition 读书笔记 | タチコマの部屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近把去年出版的 Effective Java 3rd Edition 的新章节读完了，把笔记统一整理一下。 Lambdas and StreamsItem 42: Prefer lambdas to anonymous classJava 8 以前，模板方法、函数方法基本是用匿名类实现： 1234567// before JDK1.8  use anonymous object// Anonym">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective Java 3rd edition 读书笔记">
+<meta property="og:url" content="https://tachikomachann.github.io/2019/01/20/Effective Java 3rd edition 读书笔记/index.html">
+<meta property="og:site_name" content="タチコマの部屋">
+<meta property="og:description" content="最近把去年出版的 Effective Java 3rd Edition 的新章节读完了，把笔记统一整理一下。 Lambdas and StreamsItem 42: Prefer lambdas to anonymous classJava 8 以前，模板方法、函数方法基本是用匿名类实现： 1234567// before JDK1.8  use anonymous object// Anonym">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-11-28T09:20:52.658Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Effective Java 3rd edition 读书笔记">
+<meta name="twitter:description" content="最近把去年出版的 Effective Java 3rd Edition 的新章节读完了，把笔记统一整理一下。 Lambdas and StreamsItem 42: Prefer lambdas to anonymous classJava 8 以前，模板方法、函数方法基本是用匿名类实现： 1234567// before JDK1.8  use anonymous object// Anonym">
+  
+    <link rel="alternate" href="/atom.xml" title="タチコマの部屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">タチコマの部屋</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://tachikomachann.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Effective Java 3rd edition 读书笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/20/Effective Java 3rd edition 读书笔记/" class="article-date">
+  <time datetime="2019-01-20T11:20:00.000Z" itemprop="datePublished">2019-01-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Effective Java 3rd edition 读书笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近把去年出版的 Effective Java 3rd Edition 的新章节读完了，把笔记统一整理一下。</p>
+<h2 id="Lambdas-and-Streams"><a href="#Lambdas-and-Streams" class="headerlink" title="Lambdas and Streams"></a>Lambdas and Streams</h2><h3 id="Item-42-Prefer-lambdas-to-anonymous-class"><a href="#Item-42-Prefer-lambdas-to-anonymous-class" class="headerlink" title="Item 42: Prefer lambdas to anonymous class"></a>Item 42: Prefer lambdas to anonymous class</h3><p>Java 8 以前，模板方法、函数方法基本是用匿名类实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// before JDK1.8  use anonymous object</span></span><br><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete! </span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123; </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123; </span><br><span class="line">		<span class="keyword">return</span> Integer.compare(s1.length(), s2.length()); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Java 8 开始，可以使用lambda表达式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// before JDK1.8  use anonymous object</span></span><br><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete! </span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123; </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123; </span><br><span class="line">		<span class="keyword">return</span> Integer.compare(s1.length(), s2.length()); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Java 8 中的 lambda 表达式时基于函数式接口（Function Interface），它就是一个<strong>有且仅有一个抽象方法</strong>，但是可以有多个非抽象方法的接口。函数式接口可以被隐式转换为<br>lambda 表达式。</p>
+<p>比如 上面Collections.sort中的 Comparator 变量，它的函数式接口定义为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> */</span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Comparator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(List&lt;T&gt; list, Comparator&lt;? <span class="keyword">super</span> T&gt; c)</span> </span>&#123;</span><br><span class="line">        list.sort(c);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// other method …</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以从Java 8 开始，不要创建一个匿名内部类作为函数对象，除非函数式方法入参没有定义函数式接口。</p>
+<h3 id="Item-43-Prefer-method-references-to-lambdas"><a href="#Item-43-Prefer-method-references-to-lambdas" class="headerlink" title="Item 43: Prefer method references to lambdas"></a><strong>Item 43: Prefer method references to lambdas</strong></h3><p>Java 8 开始提供一种比 lambda 更简洁的方式作为函数对象：方法引用（method references）</p>
+<p>方法引用和 lambda 表达式对比：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// method reference</span></span><br><span class="line">map.merge(key, <span class="number">1</span>, Integer::sum);</span><br><span class="line"><span class="comment">// lambda</span></span><br><span class="line">map.merge(key, <span class="number">1</span>, (count, incr) -&gt; count + incr);</span><br></pre></td></tr></table></figure>
+<p>目前方法引用唯一用途是用来简化 lambda 表达式，用方法名来代替 lambda。</p>
+<p>方法引用的几种形式：</p>
+<p><strong>引用静态方法</strong> </p>
+<p>ContainingClass::staticMethodName </p>
+<p>例子: String::valueOf，对应的Lambda：(s) -&gt; String.valueOf(s) </p>
+<p>比较容易理解，和静态方法调用相比，只是把.换为::</p>
+<p><strong>引用特定对象的实例方法</strong> </p>
+<p>containingObject::instanceMethodName </p>
+<p>例子: x::toString，对应的Lambda：() -&gt; this.toString() </p>
+<p>与引用静态方法相比，都换为实例的而已。</p>
+<p><strong>引用特定类型的任意对象的实例方法</strong> </p>
+<p>ContainingType::methodName </p>
+<p>例子: String::toString，对应的Lambda：(s) -&gt; s.toString() </p>
+<p>太难以理解了。难以理解的东西，也难以维护。建议还是不要用该种方法引用。 </p>
+<p>实例方法要通过对象来调用，方法引用对应Lambda，Lambda的第一个参数会成为调用实例方法的对象。</p>
+<p><strong>引用构造函数</strong> </p>
+<p>ClassName::new </p>
+<p>例子: String::new，对应的Lambda：() -&gt; new String() </p>
+<p>构造函数本质上是静态方法，只是方法名字比较特殊。</p>
+<p>有些情况下，使用方法引用的代码 会比 lambda 更长</p>
+<p>比如这个在 GoshThisClassNameIsHumongous 类中的方法: </p>
+<p>用方法引用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.execute(GoshThisClassNameIsHumongous::action);</span><br></pre></td></tr></table></figure>
+<p>等价的 lambda 是: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.execute(() -&gt; action());</span><br></pre></td></tr></table></figure>
+<p>下面是各种方法引用的例子：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Method ref Type</th>
+<th>Example</th>
+<th>Lambda Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Static</td>
+<td>Integer::parseInt</td>
+<td>str -&gt; Inter.parseInt(str)</td>
+</tr>
+<tr>
+<td style="text-align:left">Bound</td>
+<td>Instant.now()::isAfter</td>
+<td>Instant then = Instant.now();<br>t -&gt; then.isAfter(t)</td>
+</tr>
+<tr>
+<td style="text-align:left">Unbound</td>
+<td>String::toLowerCase</td>
+<td>str -&gt; str.toLowerCase()</td>
+</tr>
+<tr>
+<td style="text-align:left">Class Constructor</td>
+<td>TreeMap&lt;K, V&gt; :: new</td>
+<td>() -&gt; new TreeMap&lt;K, V&gt;</td>
+</tr>
+<tr>
+<td style="text-align:left">Array Constructor</td>
+<td>int[] :: new</td>
+<td>len -&gt; new int[len]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注</strong>： Bound unbound reference method 用法语义比较模糊，感觉用 Lambda 描述更清楚。</p>
+<p><strong>总而言之，当方法引用更简单明了时，就用它，否则就用 lambda。</strong></p>
+<h3 id="Item-44-Favor-the-use-of-standard-functional-interfaces"><a href="#Item-44-Favor-the-use-of-standard-functional-interfaces" class="headerlink" title="Item 44: Favor the use of standard functional interfaces"></a>Item 44: Favor the use of standard functional interfaces</h3><p>JDK 包中已经默认提供了多种函数式接口，所以尽量使用自带的而不是自己写函数式接口。</p>
+<p>比如下面的例子，我们自定义了一个函数式接口，需要让重写的类有一一个 remove 的默认方法，入参是 map自己的引用和eledest元素，使用fuction interface可以先定义一个接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Unnecessary functional interface; use a standard one instead. </span></span><br><span class="line"><span class="meta">@FunctionalInterface</span> <span class="class"><span class="keyword">interface</span> <span class="title">EldestEntryRemovalFunction</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span>&#123; </span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Map&lt;K,V&gt; map, Map.Entry&lt;K,V&gt; eldest)</span></span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实这个接口，JDK已经有默认实现，就是BiPredicate 接口。</p>
+<h4 id="标准函数式接口分类"><a href="#标准函数式接口分类" class="headerlink" title="标准函数式接口分类"></a>标准函数式接口分类</h4><p>Java 自带的函数式接口分为几类：Operator，Predicate，Function，Supplier，Consumer。</p>
+<ol>
+<li><p>Operator 接口表示入参和返回值是同一种类型的函数，比如下面代表一元、二元运算的接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UnaryOperator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Function</span>&lt;<span class="title">T</span>, <span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &lt;T&gt; <span class="function">UnaryOperator&lt;T&gt; <span class="title">identity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t -&gt; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BinaryOperator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">BiFunction</span>&lt;<span class="title">T</span>,<span class="title">T</span>,<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">BinaryOperator&lt;T&gt; <span class="title">minBy</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(comparator);</span><br><span class="line">        <span class="keyword">return</span> (a, b) -&gt; comparator.compare(a, b) &lt;= <span class="number">0</span> ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">BinaryOperator&lt;T&gt; <span class="title">maxBy</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(comparator);</span><br><span class="line">        <span class="keyword">return</span> (a, b) -&gt; comparator.compare(a, b) &gt;= <span class="number">0</span> ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><p>Predicate 有些地方叫做谓词函数，用来表示返回值是boolean 的函数，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Predicate</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">test</span><span class="params">(T t)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Function 类型的函数接口表示入参和返回值不同类型的函数，意为将参数T传给一个函数，返回R。即 R = Function(T)，比如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BiFunction</span>&lt;<span class="title">T</span>, <span class="title">U</span>, <span class="title">R</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">R <span class="title">apply</span><span class="params">(T t, U u)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Supplier 类型的接口，表示一个没有入参，有返回值的函数，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Supplier</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Supplier 常用于 Stream计算中new 对象。</p>
+</li>
+<li><p>Consumer 类型的函数接口表示接受一个泛型参数，但是不返回数据，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Consumer</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">accept</span><span class="params">(T t)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="FunctionalInterface-注解"><a href="#FunctionalInterface-注解" class="headerlink" title="@FunctionalInterface  注解"></a>@FunctionalInterface  注解</h4><p>@FunctionalInterface 有点像 @Override 注解，注释告诉编译器这是个函数式接口，没有任何功能上的作用。只有一个抽象方法的接口，不使用这个注解也是函数式接口。</p>
+<p>需要函数式接口时，先看一下Java 提供的标准接口能否满足，不满足再自己实现，实现时最好遵循标准函数式接口的定义风格。</p>
+<h3 id="Item-45-Use-streams-judiciously"><a href="#Item-45-Use-streams-judiciously" class="headerlink" title="Item 45: Use streams judiciously"></a>Item 45: Use streams judiciously</h3><h4 id="一些-stream-API-的概念"><a href="#一些-stream-API-的概念" class="headerlink" title="一些 stream API 的概念"></a>一些 stream API 的概念</h4><p>stream API 里有两种抽象概念: </p>
+<ol>
+<li>the stream: 表示Java 中的各种集合</li>
+<li>stream pipe-line: 表示对于这些集合的多重计算操作，有0个或多个 intermediate operations 一个 terminal<br>operation 组成。 intermediate operations 从一个stream传到另一个stream，terminal operation 对接最后一个 intermediate operations，对stream做最后一次操作（一般是排序、打印、转换集合结果等操作）。</li>
+</ol>
+<p>Stream pipelines 是懒式（lazily）执行的，只有当碰到 terminal operations 时，前面所有的 intermediate operations 才会执行。不带 terminal operations的stream操作是静默的，永远不会执行。</p>
+<p>stream api 是流式的。</p>
+<p>默认情况下stream pipleline 是串行（squentially）执行的</p>
+<h4 id="过度使用-stream-让程序难以阅读和维护"><a href="#过度使用-stream-让程序难以阅读和维护" class="headerlink" title="过度使用 stream 让程序难以阅读和维护"></a>过度使用 stream 让程序难以阅读和维护</h4><p>在没有显示类型的情况下，合适的参数命名是保持stream 流有良好可读性的关键。</p>
+<p><strong>避免使用 stream去处理字符（char）数据</strong> </p>
+<p>例如： </p>
+<p><code>&quot;Hello world!&quot;.chars().forEach(System.out::print);</code>  中  <code>&quot;Hello world!&quot;.chars()</code>返回的是<code>int[]</code>数组的stream，所以输出的<strong>不是 Hello world!</strong>而是 <strong>7210110810811132119i11111410810033</strong>。因为stream API中只支持 int long double三种primitive ype 的stream，没有char的stream。</p>
+<p><strong>只有在值得这么做的情况下，才需要使用sream重构已存在的代码或在新代码中使用sream。</strong>否则容易引入新问题。</p>
+<h4 id="几种适合使用stream-api的场景"><a href="#几种适合使用stream-api的场景" class="headerlink" title="几种适合使用stream api的场景"></a>几种适合使用stream api的场景</h4><ol>
+<li>统一转换元素序列（如集合中的元素类型）。</li>
+<li>过滤元素序列。</li>
+<li>对序列元素进行单一聚合操作（如计算和，最小值，连接等）</li>
+<li>将序列元素转化为集合，或者以特定条件为它们分组。</li>
+<li>以指定条件搜索序列元素。</li>
+</ol>
+<p><strong>当不知道是否需要使用sream时，两种方案都尝试，看哪个更合适。</strong></p>
+<h3 id="Item-46-Prefer-side-effect-free-functions-in-streams-（没有副作用）"><a href="#Item-46-Prefer-side-effect-free-functions-in-streams-（没有副作用）" class="headerlink" title="Item 46: Prefer side-effect-free functions in streams  （没有副作用）"></a>Item 46: Prefer side-effect-free functions in streams  （没有副作用）</h3><p>尽量把<strong>foreach</strong> 操作用于输出stream结果，而不是计算逻辑。</p>
+<p>总的来说，stream 的流式编程是没有副作用（side-effect-free）的函数对象。</p>
+<p>为了正确使用 stream，必须知道 collectors 操作，它用于产生输出集合。几个重要的collectors 工厂是：<strong>toList, toSet, toMap, groupingBy, joining.</strong></p>
+<h3 id="Item-47-Prefer-Collection-to-Stream-as-a-return-type"><a href="#Item-47-Prefer-Collection-to-Stream-as-a-return-type" class="headerlink" title="Item 47: Prefer Collection to Stream as a return type"></a><strong>Item 47: Prefer Collection to Stream as a return type</strong></h3><p>Collection 和它的子类最适合作为返回序列数据的方法的返回值类型。Stream 没有继承或实现 Interable 接口，所以它不能使用 for-each 遍历，所以当某个方法需要返回序列时，优先使用 Collection 返回而不是 Stream。<strong>因为Collection 接口不仅可以被for-each遍历，它还有一个sream方法。</strong>你的方法的调用方可能需要返回的序列结果进行sream运算，或者仅仅只要遍历访问它。</p>
+<h3 id="Item-48-Use-caution-when-making-streams-parallel"><a href="#Item-48-Use-caution-when-making-streams-parallel" class="headerlink" title="Item 48: Use caution when making streams parallel"></a><strong>Item 48: Use caution when making streams parallel</strong></h3><p>在并发编程中，违反安全性和活跃度（liveness）的情况是没法避免的，stream 的 parallel 也不例外。</p>
+<p>看下面这段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// Stream-based program to generate the first 20 Mersenne primes </span></span><br><span class="line"><span class="comment">// if change to parallel invoke, it will let cpu usage to 90 percent</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    primes().map(p -&gt; TWO.pow(p.intValueExact()).subtract(ONE))</span><br><span class="line">        .filter(mersenne -&gt; mersenne.isProbablePrime(<span class="number">50</span>)).limit(<span class="number">20</span>)</span><br><span class="line">        .forEach(System.out::println); </span><br><span class="line">&#125; </span><br><span class="line"><span class="function"><span class="keyword">static</span> Stream&lt;BigInteger&gt; <span class="title">primes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Stream.iterate(TWO, BigInteger::nextProbablePrime); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假如源代码是<code>Stream.iterate</code>，或者有使用limit()，再使用 parallel 并行化一个stream pipeline 不大可能提高性能。<strong>所以不要随意地使用 parallel 来并行化 stream 计算。</strong></p>
+<p>作为一个规则，在以下类型数据上使用stream parallel 比较容易获得性能收益：ArrayList, HashMap, HashSet, and ConcurrentHashMap instances; arrays; int ranges; and long ranges. 因为<strong>这些数据结构易于拆分子任务，且有较好的存储局部性（locality of reference），所以能在 stream 的并行任务上获得较好效果。</strong></p>
+<p>局部性原理可以参考：</p>
+<ol>
+<li><a href="https://www.zhihu.com/question/25142664" target="_blank" rel="noopener">https://www.zhihu.com/question/25142664</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/30127242" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30127242</a></li>
+</ol>
+<p>如果自己定义了 Stream，Iterable，Collection 接口的接口实现，想要在使用parallel时实现好的性能，需要重写 <strong>spliterator</strong> 方法。</p>
+<p>在正确使用的前提下，使用 parallel 处理stream 流，可以得到近似处理器核心数的线性性能提升。某些领域，比如机器学习和数据处理，特别适合这种性能提升。</p>
+<p>总的来说，不要尝试使用parallel处理stream，除非你有足够的理由去保证这么做能大幅提高性能并保证程序正确性。<strong>确保你的代码在使用parallel后仍然正确。</strong></p>
+<h2 id="Optionals"><a href="#Optionals" class="headerlink" title="Optionals"></a>Optionals</h2><p>Java 8 中新增的 Optional 容器类，它封装了可能为null的对象，强制使用方在使用时进行检查，防止NPE问题。</p>
+<p>容器类型（<strong>collections, maps, streams, arrays, and optionals</strong> ）不应该被包换到Optional对象中。</p>
+<p>当你的方法可能没有返回值时，你应该使用Optional<t>作为返回值类型，这样调用方必须处理没有返回值的情况，避免了NPE问题。</t></p>
+<p><strong>不可以用 Optional 去包装原始类型（Boolean, Byte, Character, Short, and Float）</strong>，因为 Optional 会对其进行两次装箱（boxing）。这种情况应该直接使用 <strong>OptionalInt, OptionalLong, and OptionalDouble</strong>。</p>
+<p>不要使用Optional对象最为Map的key或者数组的元素。</p>
+<p>因为涉及的装箱拆箱操作，对于性能要求严苛的方法，还是使用返回null的方式处理控制比较合适。</p>
+<h2 id="Default-methods-in-interfaces"><a href="#Default-methods-in-interfaces" class="headerlink" title="Default methods in interfaces"></a>Default methods in interfaces</h2><p>Java 8中引入默认方法是为了让老接口支持lambda表达式。在老接口中添加默认方法，这些接口的实现类不会在编译器报错。 </p>
+<h2 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h2><h3 id="Item-9-Prefer-try-with-resources-to-try-finally"><a href="#Item-9-Prefer-try-with-resources-to-try-finally" class="headerlink" title="Item  9: Prefer try-with-resources to try-finally"></a>Item  9: Prefer try-with-resources to try-finally</h3><p>Java 7 以后，应该总是使用  try-with-resources 方式而不是 try-finally 方式处理资源操作。</p>
+<p>自动关闭资源的语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources - the the best way to close resources! </span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path)</span> <span class="keyword">throws</span> IOException </span>&#123; </span><br><span class="line">	<span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader( </span><br><span class="line">	<span class="keyword">new</span> FileReader(path))) &#123; </span><br><span class="line">	<span class="keyword">return</span> br.readLine(); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>要使用 try-with-resources 语法，资源类必须实现 AutoCloseable   接口。</strong></p>
+<h2 id="safeVarags"><a href="#safeVarags" class="headerlink" title="@safeVarags"></a>@safeVarags</h2><p>混用泛型和可变参数时，可能存在安全问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// Mixing generics and varargs can violate type safety! </span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">dangerous</span><span class="params">(List&lt;String&gt;... stringLists)</span> </span>&#123;</span><br><span class="line">	List&lt;Integer&gt; intList = List.of(<span class="number">42</span>);</span><br><span class="line">	Object[] objects = stringLists;</span><br><span class="line">	objects[<span class="number">0</span>] = intList;</span><br><span class="line">	<span class="comment">// Heap pollution</span></span><br><span class="line">	String s = stringLists[<span class="number">0</span>].get(<span class="number">0</span>); <span class="comment">// ClassCastException </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存一个值到泛型的可变参数数组中是不安全的，编译器也会提出警告：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Warning look like <span class="keyword">this</span>:</span><br><span class="line">warning: [unchecked] Possible heap pollution from </span><br><span class="line">    parameterized vararg type List&lt;String&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>@SafeVarargs</strong>  提供了一种声明，表示该方法的作者保证该方法是类型安全的，编译器会忽略安全检查，不显示警告。</p>
+<p>只要有混用泛型和可变参数的方法，都要声明<strong>@SafeVarargs</strong> ，同时作者必须保证方法内部不会出现上面例子的Heap pollution 的类型安全问题。</p>
+<p>以下情况的可变参数方法是安全的：</p>
+<ol>
+<li>不在可变参数数组中保存任何数据</li>
+<li>让可变参数数组的数据对非信任代码不可见。</li>
+</ol>
+<p>@SafeVarargs  只在费重载方法中有效，且java 9之前只能用静态方法。java9中添加了私有方法的使用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/01/20/Effective Java 3rd edition 读书笔记/" data-id="cki1s49qi0001bkucukja7djv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/02/OAuth2-0面面观/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          OAuth2.0面面观
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/17/Practical Vim 读书笔记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Practical Vim 读书笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nas/">nas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树莓派/">树莓派</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/nas/" style="font-size: 10px;">nas</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/web/" style="font-size: 10px;">web</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/树莓派/" style="font-size: 10px;">树莓派</a> <a href="/tags/随笔/" style="font-size: 15px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/11/28/用树莓派4B组件简易NAS/">用树莓派4B组件简易NAS</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/22/SAML-与-SSO/">SAML 与 SSO</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/05/写在三十岁的时候/">写在三十岁的时候</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/16/Java-多线程笔记/">Java 多线程笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/05/Java-NIO-笔记/">Java NIO 笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Tachikoma<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

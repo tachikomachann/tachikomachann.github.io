@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>タチコマの部屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Less is more">
+<meta property="og:type" content="website">
+<meta property="og:title" content="タチコマの部屋">
+<meta property="og:url" content="https://tachikomachann.github.io/index.html">
+<meta property="og:site_name" content="タチコマの部屋">
+<meta property="og:description" content="Less is more">
+<meta property="og:locale" content="zh-Hans">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="タチコマの部屋">
+<meta name="twitter:description" content="Less is more">
+  
+    <link rel="alternate" href="/atom.xml" title="タチコマの部屋" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">タチコマの部屋</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://tachikomachann.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-用树莓派4B组件简易NAS" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/11/28/用树莓派4B组件简易NAS/" class="article-date">
+  <time datetime="2020-11-28T13:42:04.000Z" itemprop="datePublished">2020-11-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/11/28/用树莓派4B组件简易NAS/">用树莓派4B组件简易NAS</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近尝试用树莓派和两块硬盘搭建了简易的NAS服务，稳定运行了几周，感觉还不错。今天把自己折腾的过程记录一下。</p>
+<h2 id="我对NAS的需求"><a href="#我对NAS的需求" class="headerlink" title="我对NAS的需求"></a>我对NAS的需求</h2><ol>
+<li>2T左右的空间</li>
+<li>个人多媒体库（我没有屯片习惯，主要是听歌和偶尔下载一些片子来看）</li>
+<li>管理家庭照片（我和我老婆手机的照片）</li>
+<li>备份<ol>
+<li>增量备份到老硬盘</li>
+<li>异地备份到公有云（其实就是百度云）</li>
+<li>定时备份系统，可快速还原系统</li>
+</ol>
+</li>
+<li>外网访问：查看文件，听音乐，看照片</li>
+<li>用家里电视盒子看视频</li>
+<li>长时间运行不折腾</li>
+<li>可以休眠硬盘（其实现在大部分硬盘自带休眠功能）</li>
+<li>定时开关机</li>
+<li>消息推送：对于一些关注的事件，给我手机发通知（备份成功，开机，关机等等）</li>
+</ol>
+<h2 id="购物清单"><a href="#购物清单" class="headerlink" title="购物清单"></a>购物清单</h2><ol>
+<li>咸鱼树莓派4B 2G版本，带外壳带风扇（260元）</li>
+<li>闪迪16G SD卡2张（45元），一张做树莓派系统，一张作为备用</li>
+<li>东芝新小黑A3 2T移动硬盘+2年包换（跟家里一个1T台式机硬盘配合着用）(418元)</li>
+<li>腾讯云HK轻量服务器（安装frp作为内网穿透用）（每月24元）</li>
+<li>腾讯云买的两年域名+免费一年证书（内网穿透用）（46元）</li>
+<li>小米wifi插座（定时开关机用）（40元）</li>
+<li>水星（MERCURY）SG105M 5口千兆交换机 （52元）</li>
+</ol>
+<h2 id="组建NAS"><a href="#组建NAS" class="headerlink" title="组建NAS"></a>组建NAS</h2><p>趁着树莓派到货的间隙，查了许多有关树莓派搭建NAS的资料。其实按照目前的需求，我只需要一个网盘系统然后能够兼顾外网文件访问即可。网盘大家用的比较多的有Nextcloud和Seafile两个方案。一开始试过Seafile，发现一是安装太繁琐；二是它的文件是以块存储的方式，硬盘拆下来后，没办法绕过Seafile直接读取文件。最后决定使用Linux系统+Nextcloud作为个人网盘。</p>
+<h3 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h3><p>树莓派支持的系统挺多的，由于之前用过一段时间Manjaro，对它有点好感，刚好它也有支持树莓派的镜像，索性就用Manjaro作为我的树莓派操作系统。PS: 不要以为可以跟桌面版Manjaro一样使用海量的AUR仓库里的软件，用到后面其实我发现，很多软件都没有对应arm的版本。选Manjaro单纯是因为我习惯了这个发行版。:)</p>
+<p>安装过程跟树莓派其他系统大同小异：</p>
+<ol>
+<li>去Manjaro官网下载树莓派的镜像，因为基本不需要界面，所以我选的是xfce版本：<a href="https://manjaro.org/downloads/arm/raspberry-pi-4/arm8-raspberry-pi-4-xfce/" target="_blank" rel="noopener">https://manjaro.org/downloads/arm/raspberry-pi-4/arm8-raspberry-pi-4-xfce/</a></li>
+<li>下载SD卡烧录工具Etcher：<a href="https://www.balena.io/etcher/" target="_blank" rel="noopener">https://www.balena.io/etcher/</a></li>
+<li>用Etcher把系统镜像烧录到SD卡</li>
+<li>将SD卡插入树莓派，通电启动。</li>
+</ol>
+<p>由于我没有买树莓派专用显示器，自己的显示器接树莓派又无法显示，所以我打算用SSH登录的方式初始化树莓派系统设置。（主流的树莓派系统都有这功能，防止因为显示输出问题，没办法设置树莓派。）PS：树莓派外接HDMI显示真的是很玄学的事情，我从买第一块树莓派的时候就没成功过。</p>
+<p>SSH初始化系统的操作方式很简单：</p>
+<ol>
+<li>网线插入树莓派网口，让树莓派接入家里的局域网。</li>
+<li>在家里路由器的管理员页面上找到树莓派分配到的IP。</li>
+<li>在同一局域网内另一台计算机上运行SSH 连接：<code>ssh 树莓派IP</code></li>
+<li>没问题的话，就可以SSH登录，进行系统初始化。</li>
+</ol>
+<p>注意：初始化系统时，键盘layout选us，时区选zh-CN-UTF-8。设置完成后，可以在路由器上固定分配树莓派的IP，以防以后内网分配的IP变动。</p>
+<p>系统初始化以后，可以顺手更新下pacman的中国源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman-mirrors -i -c China -m rank</span><br></pre></td></tr></table></figure>
+<h3 id="安装Nextcloud"><a href="#安装Nextcloud" class="headerlink" title="安装Nextcloud"></a>安装Nextcloud</h3><p>Nextcloud有很多种安装方式，Docker方式应该算是最简单的，刚好我装的Manjaro系统也支持跑Docker服务，我就用Docker来运行Nextcloud了。</p>
+<p>Nextcloud官方Docker镜像：<a href="https://hub.docker.com/_/nextcloud" target="_blank" rel="noopener">https://hub.docker.com/_/nextcloud</a>  </p>
+<p>步骤：</p>
+<ol>
+<li><p>安装Docker服务。Manjaro 依托与Arch的pacman，安装Docker很方便：<code>pacman -Syy docker</code> 。</p>
+</li>
+<li><p>修改/etc/docker/daemon.json配置，使用国内镜像服务加速</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"registry-mirrors"</span>: [</span><br><span class="line">        <span class="string">"https://1nj0zren.mirror.aliyuncs.com"</span>,</span><br><span class="line">        <span class="string">"https://docker.mirrors.ustc.edu.cn"</span>,</span><br><span class="line">        <span class="string">"http://f1361db2.m.daocloud.io"</span>,</span><br><span class="line">        <span class="string">"https://registry.docker-cn.com"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启docker 服务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装docker-compose（官网最新的安装方式是用docker-compose组织Nextcloud需要的各个组件）。</p>
+</li>
+<li><p>按照官方Docker镜像的说明配置并启动Docker容器。(<a href="https://hub.docker.com/_/nextcloud" target="_blank" rel="noopener">https://hub.docker.com/_/nextcloud</a>)</p>
+</li>
+</ol>
+<p>运行Nextcloud需要一个DB（Mysql/MariaDB 或PostgreSQL）,反向代理服务器（Apache或Nginx），Nextcloud本身的app（一个PHP服务），有多种搭配。我最终选择的是MariaDB+Nginx的方案，所以使用的是 <code>nextcloud:fpm</code> 的app镜像，下面是整个<code>docker-compose.yml</code>配置文件信息：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'2'</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line"><span class="attr">  nextcloud:</span></span><br><span class="line"><span class="attr">  db:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  db:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">mariadb</span></span><br><span class="line"><span class="attr">    command:</span> <span class="bullet">--transaction-isolation=READ-COMMITTED</span> <span class="bullet">--binlog-format=ROW</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./db:/var/lib/mysql</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_ROOT_PASSWORD=root</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_PASSWORD=nextcloud</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_DATABASE=nextcloud</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_USER=nextcloud</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#这里的Redis是为了开启Nextcloud的文件锁，没需求可以不用。</span></span><br><span class="line"><span class="attr">  redis:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">redis:alpine</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  app:</span></span><br><span class="line">  <span class="comment"># 要使用nginx的方案的话，镜像应该是nextcloud:fpm</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">nextcloud:fpm</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line">      <span class="comment"># 挂载Nextcloud的应用程序目录，各种php程序文件和配置文件</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./nextcloud:/var/www/html</span></span><br><span class="line">      <span class="comment"># 挂载Nextcloud 的存储目录，用户存储的文件就在这个目录下</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./nextcloud_data:/var/www/html/data</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_HOST=db</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">REDIS_HOST=redis</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">db</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">redis</span></span><br><span class="line">  <span class="comment">#用于执行一些定时任务的Nextcloud插件，不需要也可以不装。</span></span><br><span class="line"><span class="attr">  cron:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">nextcloud:fpm-alpine</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./nextcloud:/var/www/html</span></span><br><span class="line"><span class="attr">    entrypoint:</span> <span class="string">/cron.sh</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">db</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">redis</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  web:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">8080</span><span class="string">:80</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">app</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line">     <span class="comment"># 挂载nginx的配置文件</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./nginx.conf:/etc/nginx/nginx.conf:ro</span></span><br><span class="line"><span class="attr">    volumes_from:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">app</span></span><br><span class="line"><span class="attr">    restart:</span> <span class="string">always</span></span><br></pre></td></tr></table></figure>
+<p><code>nignx.conf</code> 的配置可以参考官方的<a href="https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/mariadb/fpm/web/nginx.conf" target="_blank" rel="noopener">example</a>： </p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">worker_processes</span> auto;</span><br><span class="line"></span><br><span class="line"><span class="attribute">error_log</span>  /var/log/nginx/error.log <span class="literal">warn</span>;</span><br><span class="line"><span class="attribute">pid</span>        /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">'<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                      <span class="string">'<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> "<span class="variable">$http_referer</span>" '</span></span><br><span class="line">                      <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>"'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="comment">#tcp_nopush     on;</span></span><br><span class="line"></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">client_max_body_size</span>        <span class="number">2G</span>;</span><br><span class="line">    <span class="attribute">client_body_buffer_size</span>     <span class="number">400M</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#gzip  on;</span></span><br><span class="line"></span><br><span class="line">    <span class="attribute">upstream</span> php-handler &#123;</span><br><span class="line">        <span class="attribute">server</span> app:<span class="number">9000</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Add headers to serve security related headers</span></span><br><span class="line">        <span class="comment"># Before enabling Strict-Transport-Security headers please read into this</span></span><br><span class="line">        <span class="comment"># topic first.</span></span><br><span class="line">        <span class="comment">#add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;" always;</span></span><br><span class="line">        <span class="comment">#</span></span><br><span class="line">        <span class="comment"># WARNING: Only add the preload option once you read about</span></span><br><span class="line">        <span class="comment"># the consequences in https://hstspreload.org/. This option</span></span><br><span class="line">        <span class="comment"># will add the domain to a hardcoded list that is shipped</span></span><br><span class="line">        <span class="comment"># in all major browsers and getting removed from this list</span></span><br><span class="line">        <span class="comment"># could take several months.</span></span><br><span class="line">        <span class="attribute">add_header</span> Referrer-Policy <span class="string">"no-referrer"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-Content-Type-Options <span class="string">"nosniff"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-Download-Options <span class="string">"noopen"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-Frame-Options <span class="string">"SAMEORIGIN"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-Permitted-Cross-Domain-Policies <span class="string">"none"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-Robots-Tag <span class="string">"none"</span> always;</span><br><span class="line">        <span class="attribute">add_header</span> X-XSS-Protection <span class="string">"1; mode=block"</span> always;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Remove X-Powered-By, which is an information leak</span></span><br><span class="line">        <span class="attribute">fastcgi_hide_header</span> X-Powered-By;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Path to the root of your installation</span></span><br><span class="line">        <span class="attribute">root</span> /var/www/html;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> = /robots.txt &#123;</span><br><span class="line">            <span class="attribute">allow</span> all;</span><br><span class="line">            <span class="attribute">log_not_found</span> <span class="literal">off</span>;</span><br><span class="line">            <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># The following 2 rules are only needed for the user_webfinger app.</span></span><br><span class="line">        <span class="comment"># Uncomment it if you're planning to use this app.</span></span><br><span class="line">        <span class="comment">#rewrite ^/.well-known/host-meta /public.php?service=host-meta last;</span></span><br><span class="line">        <span class="comment">#rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># The following rule is only needed for the Social app.</span></span><br><span class="line">        <span class="comment"># Uncomment it if you're planning to use this app.</span></span><br><span class="line">        <span class="comment">#rewrite ^/.well-known/webfinger /public.php?service=webfinger last;</span></span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> = /.well-known/carddav &#123;</span><br><span class="line">            <span class="attribute">return</span> <span class="number">301</span> <span class="variable">$scheme</span>://<span class="variable">$host</span>:<span class="variable">$server_port</span>/remote.php/dav;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> = /.well-known/caldav &#123;</span><br><span class="line">            <span class="attribute">return</span> <span class="number">301</span> <span class="variable">$scheme</span>://<span class="variable">$host</span>:<span class="variable">$server_port</span>/remote.php/dav;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># set max upload size</span></span><br><span class="line">        <span class="attribute">client_max_body_size</span> <span class="number">10G</span>;</span><br><span class="line">        <span class="attribute">fastcgi_buffers</span> <span class="number">64</span> <span class="number">4K</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Enable gzip but do not remove ETag headers</span></span><br><span class="line">        <span class="attribute">gzip</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">gzip_vary</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">gzip_comp_level</span> <span class="number">4</span>;</span><br><span class="line">        <span class="attribute">gzip_min_length</span> <span class="number">256</span>;</span><br><span class="line">        <span class="attribute">gzip_proxied</span> expired <span class="literal">no</span>-cache <span class="literal">no</span>-store private no_last_modified no_etag auth;</span><br><span class="line">        <span class="attribute">gzip_types</span> application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Uncomment if your server is build with the ngx_pagespeed module</span></span><br><span class="line">        <span class="comment"># This module is currently not supported.</span></span><br><span class="line">        <span class="comment">#pagespeed off;</span></span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> / &#123;</span><br><span class="line">            <span class="attribute">rewrite</span><span class="regexp"> ^</span> /index.php;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/</span> &#123;</span><br><span class="line">            <span class="attribute">deny</span> all;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ ^\/(?:\.|autotest|occ|issue|indie|db_|console)</span> &#123;</span><br><span class="line">            <span class="attribute">deny</span> all;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+)\.php(?:$|\/)</span> &#123;</span><br><span class="line">            <span class="attribute">fastcgi_split_path_info</span><span class="regexp"> ^(.+?\.php)(\/.*|)$</span>;</span><br><span class="line">            <span class="attribute">set</span> <span class="variable">$path_info</span> <span class="variable">$fastcgi_path_info</span>;</span><br><span class="line">            <span class="attribute">try_files</span> <span class="variable">$fastcgi_script_name</span> =<span class="number">404</span>;</span><br><span class="line">            <span class="attribute">include</span> fastcgi_params;</span><br><span class="line">            <span class="attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="variable">$document_root</span><span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">            <span class="attribute">fastcgi_param</span> PATH_INFO <span class="variable">$path_info</span>;</span><br><span class="line">            <span class="comment"># fastcgi_param HTTPS on;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># Avoid sending the security headers twice</span></span><br><span class="line">            <span class="attribute">fastcgi_param</span> modHeadersAvailable <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Enable pretty urls</span></span><br><span class="line">            <span class="attribute">fastcgi_param</span> front_controller_active <span class="literal">true</span>;</span><br><span class="line">            <span class="attribute">fastcgi_pass</span> php-handler;</span><br><span class="line">            <span class="attribute">fastcgi_intercept_errors</span> <span class="literal">on</span>;</span><br><span class="line">            <span class="attribute">fastcgi_request_buffering</span> <span class="literal">off</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ ^\/(?:updater|oc[ms]-provider)(?:$|\/)</span> &#123;</span><br><span class="line">            <span class="attribute">try_files</span> <span class="variable">$uri</span>/ =<span class="number">404</span>;</span><br><span class="line">            <span class="attribute">index</span> index.php;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Adding the cache control header for js, css and map files</span></span><br><span class="line">        <span class="comment"># Make sure it is BELOW the PHP block</span></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ \.(?:css|js|woff2?|svg|gif|map)$</span> &#123;</span><br><span class="line">            <span class="attribute">try_files</span> <span class="variable">$uri</span> /index.php<span class="variable">$request_uri</span>;</span><br><span class="line">            <span class="attribute">add_header</span> Cache-Control <span class="string">"public, max-age=15778463"</span>;</span><br><span class="line">            <span class="comment"># Add headers to serve security related headers (It is intended to</span></span><br><span class="line">            <span class="comment"># have those duplicated to the ones above)</span></span><br><span class="line">            <span class="comment"># Before enabling Strict-Transport-Security headers please read into</span></span><br><span class="line">            <span class="comment"># this topic first.</span></span><br><span class="line">            <span class="comment">#add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;" always;</span></span><br><span class="line">            <span class="comment">#</span></span><br><span class="line">            <span class="comment"># WARNING: Only add the preload option once you read about</span></span><br><span class="line">            <span class="comment"># the consequences in https://hstspreload.org/. This option</span></span><br><span class="line">            <span class="comment"># will add the domain to a hardcoded list that is shipped</span></span><br><span class="line">            <span class="comment"># in all major browsers and getting removed from this list</span></span><br><span class="line">            <span class="comment"># could take several months.</span></span><br><span class="line">            <span class="attribute">add_header</span> Referrer-Policy <span class="string">"no-referrer"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-Content-Type-Options <span class="string">"nosniff"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-Download-Options <span class="string">"noopen"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-Frame-Options <span class="string">"SAMEORIGIN"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-Permitted-Cross-Domain-Policies <span class="string">"none"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-Robots-Tag <span class="string">"none"</span> always;</span><br><span class="line">            <span class="attribute">add_header</span> X-XSS-Protection <span class="string">"1; mode=block"</span> always;</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Optional: Don't log access to assets</span></span><br><span class="line">            <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ \.(?:png|html|ttf|ico|jpg|jpeg|bcmap|mp4|webm)$</span> &#123;</span><br><span class="line">            <span class="attribute">try_files</span> <span class="variable">$uri</span> /index.php<span class="variable">$request_uri</span>;</span><br><span class="line">            <span class="comment"># Optional: Don't log access to other assets</span></span><br><span class="line">            <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面配置都准备好以后，在docker-compose.yml文件的目录下，运行<code>sudo docker-compose up -d</code> 启动所有需要的容器，然后访问树莓派的80端口，就可以访问Nextcloud服务了。第一次访问会有些初始化的配置，跟着提示来就行了。</p>
+<p>整个Nextcloud用起来跟百度网盘没什么区别：<img src="nextcloud_home_page.png" alt="nextcloud_home_page"></p>
+<h3 id="关于Nextcloud的一些Troubleshooting"><a href="#关于Nextcloud的一些Troubleshooting" class="headerlink" title="关于Nextcloud的一些Troubleshooting"></a>关于Nextcloud的一些Troubleshooting</h3><h4 id="错误信息：您的数据目录可被其他用户读取，请更改权限为-0770-以避免其他用户查看目录"><a href="#错误信息：您的数据目录可被其他用户读取，请更改权限为-0770-以避免其他用户查看目录" class="headerlink" title="错误信息：您的数据目录可被其他用户读取，请更改权限为 0770 以避免其他用户查看目录"></a>错误信息：您的数据目录可被其他用户读取，请更改权限为 0770 以避免其他用户查看目录</h4><p><img src="nextcloud_0770_error.png" alt="nextcloud_0770_error"></p>
+<p>据说是因为挂载的NTFS硬盘不支持直接直接设置0770文件权限的问题。其实整个树莓派都是自己控制的，文件权限没必要太严格，可以通过下面配置忽略Nextcloud的这个文件权限检查。在Nextcloud的config.php配置文件（对于我的配置，就是.nextcloud/config/config.php）里加一行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'check_data_directory_permissions'</span> =&gt; <span class="keyword">false</span>,</span><br></pre></td></tr></table></figure>
+<p><img src="nextcloud_0770_config2.png" alt="nextcloud_0770_config2"></p>
+<h4 id="直接拷贝文件到-Nextcloud-用户的files目录里，在Nextcloud识别不到"><a href="#直接拷贝文件到-Nextcloud-用户的files目录里，在Nextcloud识别不到" class="headerlink" title="直接拷贝文件到 Nextcloud 用户的files目录里，在Nextcloud识别不到"></a>直接拷贝文件到 Nextcloud 用户的files目录里，在Nextcloud识别不到</h4><p>需要让Nextcloud 重建文件索引，这里使用他的OCC命令扫描文件目录重建索引：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker-compose -f Nextcloud的docker-compose.yml配置文件所在目录 exec  --user www-data app php occ   files:scan nextcloud用户名 -v</span><br></pre></td></tr></table></figure>
+<p>速度挺快的：</p>
+<p><img src="nextcloud_scan.png" alt="nextcloud_scan"></p>
+<h4 id="备份Nextcloud-的DB"><a href="#备份Nextcloud-的DB" class="headerlink" title="备份Nextcloud 的DB"></a>备份Nextcloud 的DB</h4><p>用docker连接 nextcloud的数据库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker  run -it --network nextcloud-docker_default  --rm mariadb mysql -hnextcloud-docker_db_1 -unextcloud -p</span><br></pre></td></tr></table></figure>
+<p>dump整个db:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker exec nextcloud-docker_db_1 sh -c 'exec mysqldump --all-databases -uroot -p"root"' &gt; 导出的dump文件.sql</span><br></pre></td></tr></table></figure>
+<p>从dump恢复</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker exec -i nextcloud-docker_db_1  sh -c 'exec mysql -uroot -p"root"' &lt; 要dump文件.sql</span><br></pre></td></tr></table></figure>
+<h4 id="加上反向代理（外网访问有用）"><a href="#加上反向代理（外网访问有用）" class="headerlink" title="加上反向代理（外网访问有用）"></a>加上反向代理（外网访问有用）</h4><p>比如我想在家里的路由器安装frpc客户端（内网ip端口：192.168.123.134:11810）做内网穿透用，这个时候就要加入可信任的反向代理服务器列表，在config.php中添加配置：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'proxy'</span> =&gt; <span class="string">'192.168.123.134:11810'</span>,</span><br><span class="line"><span class="string">'trusted_proxies'</span> =&gt; <span class="keyword">array</span>(<span class="string">'192.168.123.134'</span>),</span><br></pre></td></tr></table></figure>
+<h4 id="端到端加密"><a href="#端到端加密" class="headerlink" title="端到端加密"></a>端到端加密</h4><p>官方Encryption组件有支持端到端加密，但是问题很多。如果真的有这方面需求，可以考虑第三方方案，我这里用的是<a href="https://www.boxcryptor.com/en/" target="_blank" rel="noopener">Boxcyptor</a>方式，对某些个人比较私密的文件夹进行端到端加密（其实是为了这个另成NAS硬盘2年内挂掉时，返修的安全性：）） 。Boxcyptor官方支持Nextcloud，第一次使用按照引导配置就行。免费的Boxcyptor支持两个设备上使用，对我来说够用了。</p>
+<p><img src="boxcyptor.png" alt="boxcyptor"></p>
+<p>用它加密的Nextcloud文件，只能通过Boxcyptor查看，直接通过硬盘或者网页版Nextcloud查看都是加密的文件。</p>
+<p><img src="boxcyptor2.png" alt="boxcyptor2"></p>
+<p><img src="boxcyptor3.png" alt="boxcyptor3"></p>
+<p>PS: Boxcryptor 的android 客户端只有公网域名的地址能连接，内网地址不行，不知道为啥。</p>
+<h4 id="听歌"><a href="#听歌" class="headerlink" title="听歌"></a>听歌</h4><p>Nextcloud安装audio player和music插件可以实现在网页版Nextcloud里播放音乐文件。Android安装CloudBeats可以连接到Nextcloud里串流听音乐。</p>
+<p>至于想要实现像网易云那样的自建音乐服务，需要一些其他方案（比如subsonic，plex，koel之类的）。目前CloudBeats对我来说够用，后续有空可能会再折腾折腾。</p>
+<h3 id="针对这个树莓派NAS的一些其他设置"><a href="#针对这个树莓派NAS的一些其他设置" class="headerlink" title="针对这个树莓派NAS的一些其他设置"></a>针对这个树莓派NAS的一些其他设置</h3><h4 id="开机挂载硬盘"><a href="#开机挂载硬盘" class="headerlink" title="开机挂载硬盘"></a>开机挂载硬盘</h4><p>这里应该用硬盘的UUID挂载，用盘符/dev/sda1挂载可能不准确，因为盘符有时候会变动。</p>
+<p>先用 <code>sudo blkid</code> 查看一下设备UUID</p>
+<p><img src="mount1.png" alt="mount1"></p>
+<p>然后编辑 /etc/fstab，添加一行，使其开启自动mount改设备</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UUID=设备的UUID  /mnt/sda1   ntfs-3g    defaults        0       0</span><br></pre></td></tr></table></figure>
+<p>之后每次启动就会自动挂载这个硬盘到/mnt/sda1目录。</p>
+<h4 id="使用千兆交换机，升级内网传输速度"><a href="#使用千兆交换机，升级内网传输速度" class="headerlink" title="使用千兆交换机，升级内网传输速度"></a>使用千兆交换机，升级内网传输速度</h4><p>一切都配置完成，并开启samba服务后，发现内网拷贝文件速度还是有点慢，远达不到树莓派USB3.0和5400转机械硬盘的读写速度，后面自己分析了一下，发现瓶颈在家里的交换机，一直用的是百兆的。换了千兆交换机后，内网拷贝速度有了显著提升（虽然还没到真正NAS的标准，但是目前也满足我需求了）。</p>
+<p>百兆交换机拷贝速度：</p>
+<p><img src="swithc1.png" alt="swithc1"></p>
+<p>升级千兆交换机后拷贝速度：</p>
+<p><img src="switch2.png" alt="switch2"></p>
+<h4 id="开启SMB服务"><a href="#开启SMB服务" class="headerlink" title="开启SMB服务"></a>开启SMB服务</h4><p>虽然Nextcloud已经够用了，但是偶尔我还是会有需要内网直接访问硬盘文件或者通过家里的电视盒子看NAS里的片子的需求，所以就顺手开启了Samba服务。Manjaro如何开启Samba，可以直接参考Arch关于Samba的<a href="https://wiki.archlinux.org/index.php/samba" target="_blank" rel="noopener">wiki</a>。</p>
+<h4 id="定时开关机"><a href="#定时开关机" class="headerlink" title="定时开关机"></a>定时开关机</h4><p>树莓派本身耗电挺小的，不过考虑到延长硬盘寿命，我还是做了定时开关机。实现也很简单，每天晚上12点执行脚本，umount掉所有硬盘，然后poweroff，早上通过小米只能插座每天6点触发通电开关开机。</p>
+<h3 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h3><p>由于目前我并不是重度使用NAS，同时也考虑经济成本，所以并不打算做RAID之类方案。目前就是外挂两块硬盘，一块当NAS文件存放盘，一块作为冷备份每天挂载上来增量同步，同时搭配百度网盘的免费空间，定期往百度网盘同步重要资料。</p>
+<h4 id="使用rsync增量本分数据到备份硬盘"><a href="#使用rsync增量本分数据到备份硬盘" class="headerlink" title="使用rsync增量本分数据到备份硬盘"></a>使用rsync增量本分数据到备份硬盘</h4><p>我的备份方案是用另一块硬盘每天增量备份数据，所以这里用到了rsync。挂载备份的硬盘后，命令挺简单，就一行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rsync --delete -a -r -v -P --progress  /mnt/sda1/  /mnt/sdb1</span><br></pre></td></tr></table></figure>
+<p>注意这里一定要有-a(arvhive mode)，这样拷贝过去的文件，会在目标文件保留源文件所有属性（比如最后修改时间mtime，如果没有加-a，下次同步的时候，目标文件的mtime跟源文件不同，同样的文件又会复制一次，这就达不到增量备份的目的了）。</p>
+<p>没有加-a 拷贝后：</p>
+<p><img src="rsync1.png" alt="rsync1"></p>
+<p>有加-a拷贝后：</p>
+<p><img src="rsync2.png" alt="rsync2"></p>
+<p>后面再搭配linux的cron服务，就可以实现每天自动增量备份一次全盘数据了。</p>
+<h4 id="全量备份树莓派系统"><a href="#全量备份树莓派系统" class="headerlink" title="全量备份树莓派系统"></a>全量备份树莓派系统</h4><p>这里用的是dd整张SD卡，然后打包。</p>
+<p>每周执行一次以下命令备份系统：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd bs=4M if=/dev/sd卡 | gzip &gt; 备份文件目录/备份文件名.img.gz</span><br></pre></td></tr></table></figure>
+<p>运行后命令行会卡住，直到备份结束，16g的SD卡差不多花费十几分钟。</p>
+<p>如果想看进度，在另一个命令行中输入：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -d -n 5 ls -lh 备份文件目录/备份文件名.img.gz</span><br></pre></td></tr></table></figure>
+<h4 id="使用百度网盘做为公有云备份"><a href="#使用百度网盘做为公有云备份" class="headerlink" title="使用百度网盘做为公有云备份"></a>使用百度网盘做为公有云备份</h4><p>使用两块硬盘不做Raid还是有一定的数据丢失风险的，所以我同时使用了百度网盘作为另一个备份方案。这里用到了<a href="https://github.com/houtianze/bypy" target="_blank" rel="noopener">bypy</a>这个百度网盘这个python写的命令行客户端。虽然目前该项目已经停止开发，但还是能正常使用，满足我上传备份文件的需求。通过配置定时计划的方式，我将一些重要资料，照片归档，系统全量备份文件等定时打包上传百度网盘。目前百度网盘免费空间2T，跟我本地硬盘一样大，算是够我使用了。 </p>
+<h4 id="配置Cron定时计划"><a href="#配置Cron定时计划" class="headerlink" title="配置Cron定时计划"></a>配置Cron定时计划</h4><p>首先是安装cronie，它是cron的其中一种实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -Syy cronie</span><br></pre></td></tr></table></figure>
+<p>然后用crontab -e，编辑自己想要的cron的定时计划，我把上面用到的备份都写成了shell脚本，定时执行。</p>
+<p>cronie的日志在systemd的journal日志里， 要想看cronie的日志的话，可以使用 journalctl。</p>
+<h4 id="使用Server酱发送通知到手机"><a href="#使用Server酱发送通知到手机" class="headerlink" title="使用Server酱发送通知到手机"></a>使用Server酱发送通知到手机</h4><p><a href="http://sc.ftqq.com/3.version" target="_blank" rel="noopener">Server酱</a>是一个易用，免费的往微信发送通知的API，使用方式也非常简单，使用申请的key直接调用它的http接口就能往自己微信发送消息，非常适合整合在自己的服务端维护脚本里。我把上面在cron里用到的定时计划脚本都添加了Server酱的通知，方面追踪各个任务每天的执行成功/失败情况。</p>
+<h3 id="外网访问"><a href="#外网访问" class="headerlink" title="外网访问"></a>外网访问</h3><p>到目前为止，就可以使用Nextcloud和SMB服务在内网访问NAS的文件了，剩下的就是怎么搞定外网访问。</p>
+<p>外网访问的方案有很多种，但是总结起来就两类：一类是你的NAS所属的网络本身就暴露在公网上，也就是你们家有公网IP，这个时候就可以上DDNS把你的NAS服务挂在某个域名下;另一类是NAS是身处内网，你需要另一台能公网访问的机器（如各种云主机）与它通信（各种内网穿透方案，frp，花生棒什么的），然后你通过访问这台公网机器达到间接访问公网NAS文件的目的。</p>
+<p>以前我们家是电信宽带，后来为了省钱换成了移动，无奈只能用第二种方案（省下的钱还是要掏出来了）。对比了各种内网穿透方案，最终决定采用买云主机自建frp服务的方式。然后直接http云主机感觉不够安全，于是又买了个便宜的域名和免费的SSL证书给终端frp访问套上一层HTTPS（真是折腾不止。。。）。</p>
+<h4 id="买云主机"><a href="#买云主机" class="headerlink" title="买云主机"></a>买云主机</h4><p>其实我做公网访问主要原因就是想弃用网易云，随时听自己硬盘里的歌，所以这里还要考虑流量的问题。中国大陆的云主机服务流量都太贵了，最便宜的机器基本标配1M小水管，极限上传速度只有128K，现在一10M以内的歌，估计够呛。要是买国外的机器，访问是个问题，按照以前用搬瓦工和DO的经验，有时候网络访问还不如国内这些1M小水管。后来各大论坛查了一圈，发现腾讯云的HK轻量应用服务器还不错，1U1G，30Mbps带宽一个月1T流量只要24元/月，买来试用了一下，发现我这边访问速度还不错（起码听歌，下文件是没问题的），就打算用它来搭建内网穿透服务了。</p>
+<h4 id="用frp搭建内网穿透服务"><a href="#用frp搭建内网穿透服务" class="headerlink" title="用frp搭建内网穿透服务"></a>用frp搭建内网穿透服务</h4><p>搭建frp网上教程一大把，这里说说我的思路：</p>
+<ol>
+<li>首先是在云主机上安装frps，即frp的server端。</li>
+<li>然后在家里的路由器安装frpc，即frp的client端。</li>
+<li>然后在路由器上配置端口转发，把frpc过来的请求转发到内网的Nextcloud去。</li>
+</ol>
+<p>这样就实现了公网访问家里树莓派Nextcloud服务。我没有采用直接在树莓派上装frpc的方式，主要是考虑到安全问题，因为一旦树莓派暴露了，其实家里的其他内网设备都能访问了，但是路由器不一样，路由器有自己的防火墙和其他安全策略，在暴露有限端口的情况下，我觉得还是更安全的。而且我们家路由器是刷了padavan系统的，自带frpc，只要导入配置就好了，也比较省事。</p>
+<p>内网穿透相当于给Nextcloud加了一个反向代理，所以Nextcloud也要加一个配置，把云主机的IP和frps端口配到config.php的trusted_domains中：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'trusted_domains'</span> =&gt;</span><br><span class="line"><span class="keyword">array</span> (</span><br><span class="line">  <span class="comment"># 把云主机的ip和frps的端口放到这里（例子里的ip我瞎写的）</span></span><br><span class="line">  <span class="number">0</span> =&gt; <span class="string">'119.28.255.255:10080'</span>,</span><br><span class="line">  <span class="comment"># 如果有配置域名，域名也得放进来</span></span><br><span class="line">  <span class="number">1</span> =&gt; <span class="string">'domain.nas.com'</span>,</span><br><span class="line">),</span><br></pre></td></tr></table></figure>
+<h4 id="申请域名和证书"><a href="#申请域名和证书" class="headerlink" title="申请域名和证书"></a>申请域名和证书</h4><p>由于云主机是买的腾讯云的，为了省事，索性域名和免费证书也用他家的了。域名随便挑了个便宜顺眼的xyz域名，46块钱2年。然后顺便申请了他家一年的免费证书，通过教程简单操作几下，不到一个小时就完成了域名注册，配置，开启HTTPS，整个过程还是蛮顺利的。不过据说腾讯云一年的免费证书以后续期很不方便，还是用Let’s Encrypt然后写脚本三个月自动续签比较好。目前我还是这个白嫖证书先用着，等明年到期了再试试Let’s Encrypt的方案。</p>
+<p>开启HTTPS后，Nextcloud的confg.php还要再加点小配置：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以下两行表示：只有在源ip是192.168.222.1时，才强制使用https协议</span></span><br><span class="line"><span class="comment"># 主要用于公网域名https内网穿透访问。其中192.168.123.222为安装了frpc的路由器ip</span></span><br><span class="line"><span class="string">'overwriteprotocol'</span> =&gt; <span class="string">'https'</span>,</span><br><span class="line"><span class="string">'overwritecondaddr'</span> =&gt; <span class="string">'^192\.168\.123\.222$'</span>,</span><br></pre></td></tr></table></figure>
+<p>上面的配置主要是为了重写Nextcloud的baseurl，大部分情况下Nextcloud都能通过客户端访问的情况，在需要的时候拼接出Nextcloud站点的地址（比如生成WebDAV url的时候）。但有时候会失误，比如目前我的HTTPS方案，它会识别不了我是HTTPS访问的，拼接出来的WebDAV url还是http开头的，上面的配置就是告诉Nextcloud，用户访问来源是192.168.123.222（我装有frpc的路由器ip），他是https协议的，为他生成的url必须用https的。</p>
+<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成"></a>大功告成</h2><p>说实话，花了一个国庆假期搞的这套树莓派NAS，其实不算是NAS，只是一个自建的网盘和文件服务器。但是它基本满足了我们家目前对NAS的需求。自从搭完以来，两块硬盘一个树莓派放在角落里基本没在管它，每天检查一下Server酱的定时计划执行结果，自动备份照片，偶尔听听歌，放个片子，不用在纠结各家音乐服务的会员，感觉还是很不错的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/" data-id="cki1s49rq000vbkuc3azhdi6i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nas/">nas</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/树莓派/">树莓派</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-SAML-与-SSO" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/12/22/SAML-与-SSO/" class="article-date">
+  <time datetime="2019-12-22T12:09:36.000Z" itemprop="datePublished">2019-12-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/12/22/SAML-与-SSO/">SAML 与 SSO</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="SSO-与-SAML"><a href="#SSO-与-SAML" class="headerlink" title="SSO 与 SAML"></a>SSO 与 SAML</h2><p>在谈论单点登录系统（SSO）实现的时候，我们做技术选型，最常听到的两个方案是SAML与OAuth。得益于现在各互联网大厂的推广，OAuth的概念在这几年深入人心，几乎是SSO的首选方案。但是在OAuth还没兴起的年代，想要快速搭建一套符合业界标准的SSO系统，SAML基本上是唯一选择了。所以在众多历史悠久的企业级应用里，SAML仍然占据着SSO服务的半壁江山。<br>OAuth 之前已经了解的听清楚了，今天稍微总结一下SAML。</p>
+<h2 id="SAML-的一些概念"><a href="#SAML-的一些概念" class="headerlink" title="SAML 的一些概念"></a>SAML 的一些概念</h2><h3 id="SP-与-IdP"><a href="#SP-与-IdP" class="headerlink" title="SP 与 IdP"></a>SP 与 IdP</h3><p>SAML 中分为SP（service provider）与IdP（identity provider）两个角色。SP属于为用户提供各种业务服务的应用，IdP属于提供用户登录认证的应用。<br><img src="1.gif" alt="SAML SSO flow"><br>上面这张图摘自Oasis官方网站上SAML的说明，其中<code>hotels.example.ca</code>就是IdP,当其他两个SP应用需要用户登录时，就会重定向到它这边做登录认证，然后重定向回SP。<br>详细的认证流程可以参考Oasis官网上的<a href="http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#3.3.Identity%20Federation%20Use%20Case|outline" target="_blank" rel="noopener">3.3 Identity Federation Use Case</a>对该流程的说明</p>
+<h3 id="SAML的XML文档结构"><a href="#SAML的XML文档结构" class="headerlink" title="SAML的XML文档结构"></a>SAML的XML文档结构</h3><p><img src="2.gif" alt="SAML Architecture"><br>上图阐述了传输SAML数据时用到的一些概念。其中Assertions就是传输中具体的用户认证数据，用XML组织。Protocols是Assertions所承载的协议，SAML定义了多种协议，一般常用的是Authentication Request Protocol。Binding定义了idP与SP之间通信的方式（HTTP POST Binding或者SOAP等）。Profiles定义了使用SAML时一些最基础的信息，一般做SSO单点登录时，Profiles是相对固定的。<br>对于SAML的XML文档中每个属性用途的说明，其实一开始不必过于详细地了解，由于概念太多，很容易收到打击。可以先快速过一遍OASIS网站上的说明，然后挑一种认证流程详细了解一下各请求报文。</p>
+<h2 id="Web-Broswer-SSO-Profile"><a href="#Web-Broswer-SSO-Profile" class="headerlink" title="Web Broswer SSO Profile"></a>Web Broswer SSO Profile</h2><p>常见web应用基于SAML的SSO实现一般使用的就是Web Broswer SSO Profile。它包含两种flow:<br>SP-initiated web SSO flow 和 IdP-initiated web SSO flow ，从字面上就很容易理解，一种是SP发起的，一种是IdP发起的。SP-initiated web SSO flow 又分为两种： Redirect/POST Bindings 和 POST/Artifact Bindings。</p>
+<h3 id="SP-Initiated-SSO-Redirect-POST-Bindings"><a href="#SP-Initiated-SSO-Redirect-POST-Bindings" class="headerlink" title="SP-Initiated SSO: Redirect/POST Bindings"></a>SP-Initiated SSO: Redirect/POST Bindings</h3><p><img src="3.png" alt="Redirect/POST Bindings"><br>流程说明摘抄自OASIS，挺清楚的，就不翻译了：</p>
+<ol>
+<li>The user attempts to access a resource on sp.example.com. The user does not have a valid logon session (i.e. security context) on this site. The SP saves the requested resource URL in local state information that can be saved across the web SSO exchange.</li>
+<li><p>The SP sends an HTML form back to the browser in the HTTP response (HTTP status 200). The HTML FORM contains a SAML <authnrequest> message encoded as the value of a hidden form control named SAMLRequest.</authnrequest></p>
+<pre><code>&lt;form method=&quot;post&quot; action=&quot;https://idp.example.org/SAML2/SSO/POST&quot; ...&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;SAMLRequest&quot; value=&quot;request&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;RelayState&quot; value=&quot;token&quot; /&gt;
+    ...
+    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+&lt;/form&gt;
+</code></pre><p> The <strong>RelayState</strong> token is an opaque reference to state information maintained at the service provider. (The <strong>RelayState</strong> mechanism can leak details of the user’s activities at the SP to the IdP and so the SP should take care in its implementation to protect the user’s privacy.) The value of the <strong>SAMLRequest</strong> parameter is the base64 encoding of the following <a href="samlp:AuthnRequest" target="_blank" rel="noopener"><code>samlp:AuthnRequest</code></a> element:</p>
+<pre><code>&lt;samlp:AuthnRequest
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:21:59Z&quot;
+    AssertionConsumerServiceIndex=&quot;1&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+    &lt;samlp:NameIDPolicy
+        AllowCreate=&quot;true&quot;
+        Format=&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:transient&quot;/&gt;
+&lt;/samlp:AuthnRequest&gt;
+</code></pre><p> For ease-of-use purposes, the HTML FORM typically will be accompanied by script code that will automatically post the form to the destination site (which is the IdP in this case). The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the identity provider’s Single Sign-On Service.</p>
+<pre><code>POST /SAML2/SSO/POST HTTP/1.1
+Host: idp.example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: nnn
+SAMLRequest=request&amp;RelayState=token
+</code></pre></li>
+<li><p>The Single Sign-On Service determines whether the user has an existing logon security context at the identity provider that meets the default or requested authentication policy requirements. If not, the IdP interacts with the browser to challenge the user to provide valid credentials.</p>
+</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The IdP Single Sign-On Service issues a SAML assertion representing the user’s logon security context and places the assertion within a SAML <code>&lt;Response&gt;</code> message. Since the HTTP Artifact binding will be used to deliver the SAML Response message, <strong>it is not mandated that the assertion be digitally signed.</strong> The IdP creates an artifact containing the source ID for the <code>idp.example.org</code> site and a reference to the <code>&lt;Response&gt;</code> message (the <strong>MessageHandle</strong>). The HTTP Artifact binding allows the choice of either HTTP redirection or an HTML form POST as the mechanism to deliver the artifact to the partner. The figure shows the use of redirection.</li>
+<li><p>The SP’s Assertion Consumer Service now sends a SAML <code>&lt;ArtifactResolve&gt;</code> message containing the artifact to the IdP’s Artifact Resolution Service endpoint. This exchange is <strong>performed using a synchronous SOAP message exchange.</strong></p>
+<pre><code>&lt;samlp:ArtifactResolve
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:04Z&quot;
+    Destination=&quot;https://idp.example.org/SAML2/ArtifactResolution&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- an ArtifactResolve message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Artifact&gt;artifact&lt;/samlp:Artifact&gt;
+&lt;/samlp:ArtifactResolve&gt;
+</code></pre></li>
+<li><p>The IdP’s Artifact Resolution Service extracts the <strong>MessageHandle</strong> from the artifact and locates the original SAML <code>&lt;Response&gt;</code> message associated with it. This message is then placed inside a SAML <code>&lt;ArtifactResponse&gt;</code> message, which is returned to the SP over the SOAP channel.</p>
+<pre><code>&lt;samlp:ArtifactResponse
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    ID=&quot;identifier_3&quot;
+    InResponseTo=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+&lt;!-- an ArtifactResponse message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Status&gt;
+    &lt;samlp:StatusCode
+        Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+&lt;/samlp:Status&gt;
+&lt;samlp:Response
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_4&quot;
+    InResponseTo=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;
+    Destination=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;&gt;
+    &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+    &lt;ds:Signature
+        xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+    &lt;samlp:Status&gt;
+        &lt;samlp:StatusCode
+            Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+    &lt;/samlp:Status&gt;
+    &lt;saml:Assertion
+        xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+        ID=&quot;identifier_5&quot;
+        Version=&quot;2.0&quot;
+        IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+        &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- a Subject element is required --&gt;
+&lt;saml:Subject&gt;
+    &lt;saml:NameID
+        Format=&quot;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&quot;&gt;
+        user@mail.example.org
+    &lt;/saml:NameID&gt;
+    &lt;saml:SubjectConfirmation
+        Method=&quot;urn:oasis:names:tc:SAML:2.0:cm:bearer&quot;&gt;
+        &lt;saml:SubjectConfirmationData
+            InResponseTo=&quot;identifier_1&quot;
+            Recipient=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;
+            NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;/&gt;
+    &lt;/saml:SubjectConfirmation&gt;
+&lt;/saml:Subject&gt;
+&lt;saml:Conditions
+    NotBefore=&quot;2004-12-05T09:17:05Z&quot;
+    NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;&gt;
+    &lt;saml:AudienceRestriction&gt;
+        &lt;saml:Audience&gt;https://sp.example.com/SAML2&lt;/saml:Audience&gt;
+    &lt;/saml:AudienceRestriction&gt;
+&lt;/saml:Conditions&gt;
+&lt;saml:AuthnStatement
+    AuthnInstant=&quot;2004-12-05T09:22:00Z&quot;
+    SessionIndex=&quot;identifier_5&quot;&gt;
+    &lt;saml:AuthnContext&gt;
+        &lt;saml:AuthnContextClassRef&gt;
+            urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+        &lt;/saml:AuthnContextClassRef&gt;
+    &lt;/saml:AuthnContext&gt;
+&lt;/saml:AuthnStatement&gt;
+&lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;
+&lt;/samlp:ArtifactResponse&gt;
+</code></pre><p> The SP extracts and processes the <code>&lt;Response&gt;</code> message and then processes the embedded assertion in order to create a local logon security context for the user at the SP. Once this is completed, the SP retrieves the local state information indicated by the <strong>RelayState</strong> data to recall the originally-requested resource URL. It then sends an HTTP redirect response to the browser directing it to access the originally requested resource (not shown).</p>
+</li>
+<li><p>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</p>
+</li>
+</ol>
+<h3 id="SP-Initiated-SSO-POST-Artifact-Bindings"><a href="#SP-Initiated-SSO-POST-Artifact-Bindings" class="headerlink" title="SP-Initiated SSO: POST/Artifact Bindings"></a>SP-Initiated SSO: POST/Artifact Bindings</h3><p><img src="4.png" alt="POST/Artifact Bindings"></p>
+<ol>
+<li>The user attempts to access a resource on sp.example.com. The user does not have a valid logon session (i.e. security context) on this site. The SP saves the requested resource URL in local state information that can be saved across the web SSO exchange.</li>
+<li><p>The SP sends an HTML form back to the browser in the HTTP response (HTTP status 200). The HTML FORM contains a SAML <authnrequest> message encoded as the value of a hidden form control named SAMLRequest.</authnrequest></p>
+<pre><code>&lt;form method=&quot;post&quot; action=&quot;https://idp.example.org/SAML2/SSO/POST&quot; ...&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;SAMLRequest&quot; value=&quot;request&quot; /&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;RelayState&quot; value=&quot;token&quot; /&gt;
+    ...
+    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+&lt;/form&gt;
+</code></pre><p> The <strong>RelayState</strong> token is an opaque reference to state information maintained at the service provider. (The <strong>RelayState</strong> mechanism can leak details of the user’s activities at the SP to the IdP and so the SP should take care in its implementation to protect the user’s privacy.) The value of the <strong>SAMLRequest</strong> parameter is the base64 encoding of the following <a href="samlp:AuthnRequest" target="_blank" rel="noopener"><code>samlp:AuthnRequest</code></a> element:</p>
+<pre><code>&lt;samlp:AuthnRequest
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:21:59Z&quot;
+    AssertionConsumerServiceIndex=&quot;1&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+    &lt;samlp:NameIDPolicy
+        AllowCreate=&quot;true&quot;
+        Format=&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:transient&quot;/&gt;
+&lt;/samlp:AuthnRequest&gt;
+</code></pre><p> For ease-of-use purposes, the HTML FORM typically will be accompanied by script code that will automatically post the form to the destination site (which is the IdP in this case). The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the identity provider’s Single Sign-On Service.</p>
+<pre><code>POST /SAML2/SSO/POST HTTP/1.1
+Host: idp.example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: nnn
+SAMLRequest=request&amp;RelayState=token
+</code></pre></li>
+<li><p>The Single Sign-On Service determines whether the user has an existing logon security context at the identity provider that meets the default or requested authentication policy requirements. If not, the IdP interacts with the browser to challenge the user to provide valid credentials.</p>
+</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The IdP Single Sign-On Service issues a SAML assertion representing the user’s logon security context and places the assertion within a SAML <code>&lt;Response&gt;</code> message. Since the HTTP Artifact binding will be used to deliver the SAML Response message, <strong>it is not mandated that the assertion be digitally signed.</strong> The IdP creates an artifact containing the source ID for the <code>idp.example.org</code> site and a reference to the <code>&lt;Response&gt;</code> message (the <strong>MessageHandle</strong>). The HTTP Artifact binding allows the choice of either HTTP redirection or an HTML form POST as the mechanism to deliver the artifact to the partner. The figure shows the use of redirection.</li>
+<li><p>The SP’s Assertion Consumer Service now sends a SAML <code>&lt;ArtifactResolve&gt;</code> message containing the artifact to the IdP’s Artifact Resolution Service endpoint. This exchange is <strong>performed using a synchronous SOAP message exchange.</strong></p>
+<pre><code>&lt;samlp:ArtifactResolve
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:04Z&quot;
+    Destination=&quot;https://idp.example.org/SAML2/ArtifactResolution&quot;&gt;
+    &lt;saml:Issuer&gt;https://sp.example.com/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- an ArtifactResolve message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Artifact&gt;artifact&lt;/samlp:Artifact&gt;
+&lt;/samlp:ArtifactResolve&gt;
+</code></pre></li>
+<li><p>The IdP’s Artifact Resolution Service extracts the <strong>MessageHandle</strong> from the artifact and locates the original SAML <code>&lt;Response&gt;</code> message associated with it. This message is then placed inside a SAML <code>&lt;ArtifactResponse&gt;</code> message, which is returned to the SP over the SOAP channel.</p>
+<pre><code>&lt;samlp:ArtifactResponse
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    ID=&quot;identifier_3&quot;
+    InResponseTo=&quot;identifier_2&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+&lt;!-- an ArtifactResponse message SHOULD be signed --&gt;
+&lt;ds:Signature
+    xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+&lt;samlp:Status&gt;
+    &lt;samlp:StatusCode
+        Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+&lt;/samlp:Status&gt;
+&lt;samlp:Response
+    xmlns:samlp=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;
+    xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+    ID=&quot;identifier_4&quot;
+    InResponseTo=&quot;identifier_1&quot;
+    Version=&quot;2.0&quot;
+    IssueInstant=&quot;2004-12-05T09:22:05Z&quot;
+    Destination=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;&gt;
+    &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+    &lt;ds:Signature
+        xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;...&lt;/ds:Signature&gt;
+    &lt;samlp:Status&gt;
+        &lt;samlp:StatusCode
+            Value=&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;/&gt;
+    &lt;/samlp:Status&gt;
+    &lt;saml:Assertion
+        xmlns:saml=&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;
+        ID=&quot;identifier_5&quot;
+        Version=&quot;2.0&quot;
+        IssueInstant=&quot;2004-12-05T09:22:05Z&quot;&gt;
+        &lt;saml:Issuer&gt;https://idp.example.org/SAML2&lt;/saml:Issuer&gt;
+&lt;!-- a Subject element is required --&gt;
+&lt;saml:Subject&gt;
+    &lt;saml:NameID
+        Format=&quot;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&quot;&gt;
+        user@mail.example.org
+    &lt;/saml:NameID&gt;
+    &lt;saml:SubjectConfirmation
+        Method=&quot;urn:oasis:names:tc:SAML:2.0:cm:bearer&quot;&gt;
+        &lt;saml:SubjectConfirmationData
+            InResponseTo=&quot;identifier_1&quot;
+            Recipient=&quot;https://sp.example.com/SAML2/SSO/Artifact&quot;
+            NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;/&gt;
+    &lt;/saml:SubjectConfirmation&gt;
+&lt;/saml:Subject&gt;
+&lt;saml:Conditions
+    NotBefore=&quot;2004-12-05T09:17:05Z&quot;
+    NotOnOrAfter=&quot;2004-12-05T09:27:05Z&quot;&gt;
+    &lt;saml:AudienceRestriction&gt;
+        &lt;saml:Audience&gt;https://sp.example.com/SAML2&lt;/saml:Audience&gt;
+    &lt;/saml:AudienceRestriction&gt;
+&lt;/saml:Conditions&gt;
+&lt;saml:AuthnStatement
+    AuthnInstant=&quot;2004-12-05T09:22:00Z&quot;
+    SessionIndex=&quot;identifier_5&quot;&gt;
+    &lt;saml:AuthnContext&gt;
+        &lt;saml:AuthnContextClassRef&gt;
+            urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+        &lt;/saml:AuthnContextClassRef&gt;
+    &lt;/saml:AuthnContext&gt;
+&lt;/saml:AuthnStatement&gt;
+&lt;/saml:Assertion&gt;
+&lt;/samlp:Response&gt;
+&lt;/samlp:ArtifactResponse&gt;
+</code></pre><p> The SP extracts and processes the <code>&lt;Response&gt;</code> message and then processes the embedded assertion in order to create a local logon security context for the user at the SP. Once this is completed, the SP retrieves the local state information indicated by the <strong>RelayState</strong> data to recall the originally-requested resource URL. It then sends an HTTP redirect response to the browser directing it to access the originally requested resource (not shown).</p>
+</li>
+<li><p>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</p>
+</li>
+</ol>
+<h3 id="两个-SP-Initiated-flow-有什么区别？"><a href="#两个-SP-Initiated-flow-有什么区别？" class="headerlink" title="两个 SP-Initiated flow 有什么区别？"></a>两个 SP-Initiated flow 有什么区别？</h3><p>OASIS网站上并没有说为什么要这两种flow。上图两者最明显的区别是SP对IdP的response验证方式，一种不走服务端，一种通过SOAP进行了一次服务端通信。我觉得可能是为了满足不同实现方的条件，毕竟不是所有实现方都有证书，可以对XML进行加签和校验，所以只能再走一次服务端通信。</p>
+<h3 id="IdP-initiated-web-SSO-flow"><a href="#IdP-initiated-web-SSO-flow" class="headerlink" title="IdP-initiated web SSO flow"></a>IdP-initiated web SSO flow</h3><p><img src="5.png" alt="IdP-initiated web SSO flow"></p>
+<p>IdP-initiated web SSO flow 跟 SP-Initiated flow 比较类似了，只是发起端在IdP:</p>
+<ol>
+<li>If the user does not have a valid local security context at the IdP, at some point the user will be challenged to supply their credentials to the IdP site, <code>idp.example.org</code>.</li>
+<li>The user provides valid credentials and a local logon security context is created for the user at the IdP.</li>
+<li>The user selects a menu option or link on the IdP to request access to an SP web site, <code>sp.example.com</code>. This causes the IdP’s Single Sign-On Service to be called.</li>
+<li>The Single Sign-On Service builds a SAML assertion representing the user’s logon security context. Since a POST binding is going to be used, the assertion is digitally signed before it is placed within a SAML <code>&lt;Response&gt;</code> message. The <code>&lt;Response&gt;</code> message is then placed within an HTML FORM as a hidden form control named <strong>SAMLResponse</strong>. (If the convention for identifying a specific application resource at the SP is supported at the IdP and SP, the resource URL at the SP is also encoded into the form using a hidden form control named <strong>RelayState</strong>.) The Single Sign-On Service sends the HTML form back to the browser in the HTTP response. For ease-of-use purposes, the HTML FORM typically will contain script code that will automatically post the form to the destination site.</li>
+<li>The browser, due either to a user action or execution of an “auto-submit” script, issues an HTTP POST request to send the form to the SP’s Assertion Consumer Service. The service provider’s Assertion Consumer Service obtains the <code>&lt;Response&gt;</code> message from the HTML FORM for processing. The digital signature on the SAML assertion must first be validated and then the assertion contents are processed in order to create a local logon security context for the user at the SP. Once this completes, the SP retrieves the <strong>RelayState</strong> data (if any) to determine the desired application resource URL and sends an HTTP redirect response to the browser directing it to access the requested resource (not shown).</li>
+<li>An access check is made to establish whether the user has the correct authorization to access the resource. If the access check passes, the resource is then returned to the browser.</li>
+</ol>
+<h2 id="SAML-VS-OAuth"><a href="#SAML-VS-OAuth" class="headerlink" title="SAML VS OAuth"></a>SAML VS OAuth</h2><p>最后比较一下SAML与OAuth的区别。<br>SAML 有更多面向企业级的认证授权配置选项，定制化程度高。一旦SP和IdP实现了SAML协议，接入对方只需要对系统进行配置导入和一些简单的配置，基本不会有另外开发工作。所以SAML更适合各种异构的系统组合，特别是那种需要与外部系统（没有源码，无法控制对方行为）对接的情况。<br>OAuth出现比SAML晚得多，目的是为了方便的做互联网应用之间的授权。它在技术实现上更新，更简单，对互联网应用，移动应用更友好。接入需要一定开发工作。OAuth 是授权（Authorization）协议，不是认证（Authentication）协议，只是某些情况下可以用作登陆认证。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#1.Introduction|outline" target="_blank" rel="noopener">OASIS SAML介绍页</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/12/22/SAML-与-SSO/" data-id="cki1s49r1000bbkuc8jfjmcp6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-写在三十岁的时候" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/11/05/写在三十岁的时候/" class="article-date">
+  <time datetime="2019-11-05T12:19:04.000Z" itemprop="datePublished">2019-11-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/11/05/写在三十岁的时候/">写在三十岁的时候</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="cover.jpg" alt><br>我其实很烦写东西，因为每次翻看以前写的东西，总是有种往事不堪回首的羞耻感。但是马上三十岁了，总觉得应该做点什么仪式感的事。<br>三十岁的我跟十几年前的我有什么区别？我觉得大体上是没什么区别的。仍然喜欢自己十几岁时候的东西，仍然有种学生心态认为遵守规则才是处事准则，仍然心理发育迟缓不懂为人处世。要说有什么变化，就是开始理解十几岁时听烂的大道理，开始理解父母，理解作为大人的不易，懂得更平静地去看待一些事情。<br>所以三十岁对我意味着什么？我不认为这个年纪是个门槛，人是不可能在某个节点性情大变的。所以三十岁于我，只能算个值得记录的时间节点。总结一下三十年来的人生，继续前行。<br>保持学习，保持思考，然后，为家人和自己，保持健康。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/11/05/写在三十岁的时候/" data-id="cki1s49rs000xbkucn6wcl2n9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java-多线程笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/16/Java-多线程笔记/" class="article-date">
+  <time datetime="2019-09-16T12:31:09.000Z" itemprop="datePublished">2019-09-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/16/Java-多线程笔记/">Java 多线程笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>重新温习了 <a href="http://tutorials.jenkov.com/java-concurrency/index.html" target="_blank" rel="noopener">http://tutorials.jenkov.com/java-concurrency/index.html</a> 关于Java 并发的系列文章，有所收获，总结如下。</p>
+<p><img src="Java Concurrency.png" alt="Java Concurrency.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/09/16/Java-多线程笔记/" data-id="cki1s49qr0005bkuc0av7049p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java-NIO-笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/09/05/Java-NIO-笔记/" class="article-date">
+  <time datetime="2019-09-05T12:19:04.000Z" itemprop="datePublished">2019-09-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/05/Java-NIO-笔记/">Java NIO 笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近学习 Netty的时候，复习了下Java NIO的知识，从<a href="http://tutorials.jenkov.com/java-nio/index.html" target="_blank" rel="noopener">tutorials.jenkov.com</a>课程中整理出一份<a href="https://www.edrawsoft.cn/viewer/public/s/b1910716022219" target="_blank" rel="noopener">Java NIO笔记</a>思维导图，供以后快速回顾：</p>
+<p><img src="Java-NIO-mind-map.png" alt="Java NIO笔记"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/09/05/Java-NIO-笔记/" data-id="cki1s49ql0003bkuco326lfh6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nio/">nio</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-关于方法论" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/15/关于方法论/" class="article-date">
+  <time datetime="2019-06-15T03:11:00.000Z" itemprop="datePublished">2019-06-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/15/关于方法论/">关于方法论</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>很多离职的小伙伴都喜欢吐槽前公司是个方法论公司，大佬喜欢大谈方法论，晋升答辩除了工作内容之外，有一项考核就是影响力价值观输出。这样有什么问题呢？作为曾经的一线研发，我觉得问题在于这些抽象上，概念上，甚至鸡汤般的东西，有时候不能解决基层员工的痛点。方法论是个好东西，是我们工作经验的提炼，总结，淡淡方法论对于怎么高效工作，管理团队有指导意义。但是对于基层员工，他们每天面临着公司最脏，最累，最烦琐的工作，有些人又是讨好型人格不懂拒绝，于是就很容易陷入穷忙的死循环。这时候你跟他们大谈方法论，说要注意工作的轻重缓急，及时汇报，懂得拒绝，不要事情都一个人抗，学会减少重复劳动巴拉巴拉。但是要知道，工作都是上面安排的，他已经是最一线的员工，没人能转手了，这种情况下其实已经分身乏术。过于注重方法论输出的另一个问题就是容易产生骗子，以晋升为例，来自各部门的评委们在几十分钟的答辩内，是否真的能真实了解一个人工作产出？对于那些晋升成功的，和他合作的同事心里真实评价如何？脉脉上吐槽做着低P的工作，像个高P一样高谈阔论这种事，肯定是存在的。看着别人没多少产出就能顺利晋级，那些每天累死累活的人会怎么想，既没有加薪，又没有晋升，干的又不开心，负面能量不断累积，想来想去也只有愤然离职这一条路。最终就是铁打的领导流水的兵，然后领导继续给新员工灌输方法论，新员工受不了后继续跑路。<br>所以我觉得，方法论也好，鸡汤也罢，这都是管理团队提高效率需要的技能。但是落到具体员工身上上，老板们也需要关注下下面人真正的痛点是什么，应该怎么改善。毕竟鸡汤也只是偶尔补补身子用的，一日三餐才是大多数人面临的人生问题。<br>当然，如果把底下人当成几年一换的耗材，上面说的就都是废话了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/06/15/关于方法论/" data-id="cki1s49rn000tbkuchycmxrxw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-OAuth2-0面面观" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/02/OAuth2-0面面观/" class="article-date">
+  <time datetime="2019-06-02T12:30:22.000Z" itemprop="datePublished">2019-06-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/02/OAuth2-0面面观/">OAuth2.0面面观</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="Untitled-fd497460-61c4-4965-8a17-b8713a4c9372.png" alt></p>
+<p>只要是接触过各种开放平台的开发者，对于OAuth概念肯定不陌生。但是由于OAuth流程比较复杂，对于刚接触的人来说，容易云里雾里。我之前工作上接触OAuth比较多，本文以OAuth2.0的RFC文档为基础，结合自己以前一些工作上的经验，系统地梳理一下OAuth2.0规范。</p>
+<h2 id="What-is-OAuth"><a href="#What-is-OAuth" class="headerlink" title="What is OAuth"></a>What is OAuth</h2><p>关于OAuth的定义，维基百科是这么说的：</p>
+<blockquote>
+<p>OAuth is an open standard for access delegation, commonly used as a way for Internet users to grant websites or applications access to their information on other websites but without giving them the passwords. This mechanism is used by companies such as Amazon, Google, Facebook, Microsoft and Twitter to permit the users to share information about their accounts with third party applications or websites.</p>
+</blockquote>
+<p>O == Open, Auth == Authorization（授权）, not Authentication（认证）.</p>
+<p>首先要明确的是，OAuth是一种授权协议，而非认证协议。通过它，用户可以授权第三方应用访问自己保存在资源服务器器上的资源。当然，如果这些资源是账号信息，第三方服务器也可以基于OAuth实现类似SSO的单点登录，完成登录认证。</p>
+<h2 id="OAuth历史"><a href="#OAuth历史" class="headerlink" title="OAuth历史"></a>OAuth历史</h2><p><img src="Untitled-e8759fb4-4901-449a-aea8-9abb58109b82.png" alt></p>
+<p>上面这张图基本涵盖了OAuth诞生的相关历史进程。</p>
+<p>在2006年，Twitter在开发他们自己的OpenID实现，而当时Ma.gnolia网站需要一个使用OpenID授权访问他们网站资源的方案，双方会面讨论后发现当时并没有一个统一的标准API实现这件事。</p>
+<p>上面功能的实现者们于2007年成立了OAuth讨论组，撰写并公布了最早的开放授权（OAuth）草案。这个草案后来得到了Google的关注，最终也一起参与了规范的制定。</p>
+<p>在2007年10月，OAuth1.0草案公布。</p>
+<p>在2008年11月的IETF第73次会议上，OAuth得到广泛支持，IETF正式为它成立了一个工作组。</p>
+<p>2010年，编号为RFC-5849的OAuth1.0 RFC文档发表。</p>
+<p>在2012年，OAuth2.0 的RFC-6749, 和Bearer Token 的 RFC-6750相继发表。大多数互联网应用都以此作为授权标准。需要注意的是OAuth2.0与OAuth1.0并不兼容。</p>
+<p>虽然IETF的RFC意为征求意见稿(Request for Comment)，但是目前它已经是开放授权的事实标准。</p>
+<p>本文后续的一些内容，提炼自IETF的RFC文档，并结合我自己工作中的一些经验总结。</p>
+<h2 id="一些概念"><a href="#一些概念" class="headerlink" title="一些概念"></a>一些概念</h2><p>了解OAuth2.0之前，我们先熟悉几个概念。</p>
+<h3 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h3><p><img src="Untitled-3328dbda-4800-4e0a-8e69-9aeccec4061d.png" alt></p>
+<p>OAuth2.0 把整个流程中的参与者分为4种角色：</p>
+<ol>
+<li>Resource Owner：资源拥有者，通常是我们网站/应用的用户。</li>
+<li>Client secret：与Client id 配对的密钥，格式各家实现不用，保证安全性即可。在进行OAuth授权流程时，Client必须提供Client id与 Client secret。如果Client secret发生泄露，出于安全考虑，Authorization Server一般允许注册方重新生成secret.</li>
+<li>Client：客户端，一般指第三方应用程序，即资源使用方。比如豆瓣注册时，需要用户的微信头像做豆瓣头像，此时豆瓣就是Client。</li>
+<li>Authorization Server：授权服务器，对Client进行授权时验证客户端，用户合法性的节点。Resource Server 和 Authorization Server可能是同一个（比如资源是账号数据时）也可能不同。</li>
+</ol>
+<h3 id="几个术语"><a href="#几个术语" class="headerlink" title="几个术语"></a>几个术语</h3><p>首先，Client 想要得到Authorization Server 的授权，需要先注册。比如各种开放平台，需要先由开发者提供网站地址，应用名称，默认重定向地址等信息，才能为其颁发合法的Client id 和 Client Secret 进行OAuth授权。</p>
+<ol>
+<li>Client id：是 Client 在Authorization Server注册的标志，格式各家实现不同，但是需要全局唯一。一般注册后不会改变，也有实现方喜欢叫App id。</li>
+<li>Client secret：与Client id 配对的密钥，格式各家实现不用，保证完全性即可。在进行OAuth授权流程时，Client必须提供Client id与 Client secret。如果Client secret发生泄露，处于安全考虑，Authorization Server一般允许注册方重新生成secret.</li>
+<li>User-Agent：一般指用户浏览器，或者APP。</li>
+<li>Access token：是完成授权流程后，Client得到的票据，访问Resource Owner的资源时，需要对其进行验证。认证失败Authorization Server将引导Client重新进行OAuth流程。</li>
+<li>Refresh token：类似 AccessToken 的票据，用于刷新Access token（不需要重新走OAuth流程）。Refresh token 是可选项，不一定要实现。</li>
+</ol>
+<p>熟悉这些概念后，我们开始介绍OAuth2.0定义的标准授权流程。</p>
+<h2 id="OAuth2-0-Flow"><a href="#OAuth2-0-Flow" class="headerlink" title="OAuth2.0 Flow"></a>OAuth2.0 Flow</h2><p>以下几种OAuth Flow，摘选自RFC相关文档，详情请参考最后引用链接。</p>
+<p>为覆盖各种场景，OAuth2.0划分了4种授权流程：</p>
+<ol>
+<li>Authorization Code：授权码模式，因为需要在各个节点往返三次，俗称3 leg。</li>
+<li>Implicit：隐式授权，相对于授权码模式做了简化。 </li>
+<li>Resource Owner Password Credentials：密码认证模式。</li>
+<li>Client Credentials：客户端认证模式。</li>
+</ol>
+<p>下面详细介绍这几种模式。</p>
+<h3 id="Authorization-Code-Grant"><a href="#Authorization-Code-Grant" class="headerlink" title="Authorization Code Grant"></a>Authorization Code Grant</h3><p>下图描述了一个完整的 Authorization Code 模式授权流程，Client与其他角色的交互通过User-Agent，这里 Client 包含前端和后端服务器。</p>
+<pre><code>+----------+
+| Resource |
+|   Owner  |
+|          |
++----------+
+     ^
+     |
+    (B)
++----|-----+          Client Identifier      +---------------+
+|         -+----(A)-- &amp; Redirection URI ----&gt;|               |
+|  User-   |                                 | Authorization |
+|  Agent  -+----(B)-- User authenticates ---&gt;|     Server    |
+|          |                                 |               |
+|         -+----(C)-- Authorization Code ---&lt;|               |
++-|----|---+                                 +---------------+
+  |    |                                         ^      v
+ (A)  (C)                                        |      |
+  |    |                                         |      |
+  ^    v                                         |      |
++---------+                                      |      |
+|         |&gt;---(D)-- Authorization Code ---------&apos;      |
+|  Client |          &amp; Redirection URI                  |
+|         |                                             |
+|         |&lt;---(E)----- Access Token -------------------&apos;
++---------+       (w/ Optional Refresh Token)
+</code></pre><ol>
+<li>步骤A：用户在通过User-Agent(浏览器)使用Client时，Client需要访问用户Resource Owner的资源，此时发起了OAuth流程。Client携带客户端认证信息（Client id）、请求资源的范围、本地状态，重定向地址等重定向到Authorization Server，用户看到授权确认页面。</li>
+<li>步骤B：用户认证并确认授权信息，Authorization Server判断用户是否合法来进行下一步授权或者返回错误。</li>
+<li>步骤C：如果用户合法且同意授权，Authorization Server使用第一步Client提交的重定向地址重定向浏览器，并携带授权码和之前Client提供的本地状态信息。</li>
+<li>步骤D：Client 使用授权码找Authorization Server交换access token(处于安全性考虑，一般由Client 的服务端发起)，为了严格验证，这一步除了携带授权码，还需要前面使用的重定向地址。</li>
+<li>步骤E：Authorization Server 验证Client提交的授权码是否有效，重定向地址是否与步骤C匹配。如果验证通过，将返回access token和refresh token（可选）给Client。</li>
+</ol>
+<p>得到 access token后，Client可以在token失效前，访问Resource Server得到已授权的用户资源。OAuth2.0在Client与Resource Server之间，设置了一个授权层（authorization layer），Client 通过得到的授权令牌访问资源，对于资源访问权限、时效在颁发令牌时控制。</p>
+<p>流程中几个步骤涉及到的接口：</p>
+<p>重定向授权页（步骤A）</p>
+<p>请求例子：</p>
+<pre><code>GET /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1
+Host: server.example.com
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">response_type</td>
+<td style="text-align:left">表示授权类型，必选项，此处的值固定为”code”</td>
+</tr>
+<tr>
+<td style="text-align:left">client_id</td>
+<td style="text-align:left">表示客户端的ID，必选项</td>
+</tr>
+<tr>
+<td style="text-align:left">redirect_uri</td>
+<td style="text-align:left">表示重定向URI，可选项。如果不提供，Authorization Server会使用Client注册时的重定向URI进行重定向。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示申请的权限范围，可选项，多个scope值用空格分开</td>
+</tr>
+<tr>
+<td style="text-align:left">state</td>
+<td style="text-align:left">表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。建议使用。</td>
+</tr>
+</tbody>
+</table>
+<p>重定向回Client（步骤C）</p>
+<p>请求例子：</p>
+<pre><code>HTTP/1.1 302 Found
+Location: https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&amp;state=xyz
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">code</td>
+<td style="text-align:left">表示授权码，必选项。该码的有效期应该很短，通常设为10分钟，客户端只能使用该码一次，否则会被授权服务器拒绝。该码与客户端ID和重定向URI，是一一对应关系。</td>
+</tr>
+<tr>
+<td style="text-align:left">state</td>
+<td style="text-align:left">表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。建议使用。</td>
+</tr>
+</tbody>
+</table>
+<p>从 Authorization Server 获取token（步骤D）</p>
+<p>请求例子：</p>
+<pre><code>POST /token HTTP/1.1
+Host: server.example.com
+Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">grant_type</td>
+<td style="text-align:left">表示使用的授权模式，必选项，此处的值固定为”authorization_code”。</td>
+</tr>
+<tr>
+<td style="text-align:left">code</td>
+<td style="text-align:left">表示上一步获得的授权码，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">redirect_uri</td>
+<td style="text-align:left">表示重定向URI，必选项，且必须与A步骤中的该参数值保持一致。</td>
+</tr>
+<tr>
+<td style="text-align:left">client_id</td>
+<td style="text-align:left">Client在Authorization Server注册后得到的client_id，必选项。</td>
+</tr>
+</tbody>
+</table>
+<p>Authorization Server 返回token（步骤E）</p>
+<p>响应结果例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: application/json;charset=UTF-8</span><br><span class="line">Cache-Control: no-store</span><br><span class="line">Pragma: no-cache</span><br><span class="line">&#123;</span><br><span class="line">   <span class="attr">"access_token"</span>:<span class="string">"2YotnFZFEjr1zCsicMWpAA"</span>,</span><br><span class="line">   <span class="attr">"token_type"</span>:<span class="string">"example"</span>,</span><br><span class="line">   <span class="attr">"expires_in"</span>:<span class="number">3600</span>,</span><br><span class="line">   <span class="attr">"refresh_token"</span>:<span class="string">"tGzv3JOkF0XG5Qx2TlKWIA"</span>,</span><br><span class="line">   <span class="attr">"example_parameter"</span>:<span class="string">"example_value"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">access_token</td>
+<td style="text-align:left">表示访问令牌，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">token_type</td>
+<td style="text-align:left">表示令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。</td>
+</tr>
+<tr>
+<td style="text-align:left">expires_in</td>
+<td style="text-align:left">表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</td>
+</tr>
+<tr>
+<td style="text-align:left">refresh_token</td>
+<td style="text-align:left">表示更新令牌，用来获取下一次的访问令牌，可选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示权限范围，如果与客户端申请的范围一致，此项可省略。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Implicit-Grant"><a href="#Implicit-Grant" class="headerlink" title="Implicit Grant"></a>Implicit Grant</h3><p>Implicit 授权的流程如下图，与 Authorization Code 相比，少了返回授权码这一步，Authorization Server直接返回token至Client的前端，Client方面没有后端参与。图中的Web-Hosted Client Resource可以认为是Client的前端资源容器，比如前端服务器，APP等。</p>
+<pre><code>+----------+
+| Resource |
+|  Owner   |
+|          |
++----------+
+     ^
+     |
+    (B)
++----|-----+          Client Identifier     +---------------+
+|         -+----(A)-- &amp; Redirection URI ---&gt;|               |
+|  User-   |                                | Authorization |
+|  Agent  -|----(B)-- User authenticates --&gt;|     Server    |
+|          |                                |               |
+|          |&lt;---(C)--- Redirection URI ----&lt;|               |
+|          |          with Access Token     +---------------+
+|          |            in Fragment
+|          |                                +---------------+
+|          |----(D)--- Redirection URI ----&gt;|   Web-Hosted  |
+|          |          without Fragment      |     Client    |
+|          |                                |    Resource   |
+|     (F)  |&lt;---(E)------- Script ---------&lt;|               |
+|          |                                +---------------+
++-|--------+
+  |    |
+ (A)  (G) Access Token
+  |    |
+  ^    v
++---------+
+|         |
+|  Client |
+|         |
++---------+
+</code></pre><ol>
+<li>步骤A：与 Authorization Code流程类似，Client携带客户端认证信息（Client id 和 Secret）、请求资源的范围、本地状态，重定向地址等重定向到Authorization Server，用户看到授权确认页面。</li>
+<li>步骤B：用户认证并确认授权信息，Authorization Server判断用户是否合法来进行下一步授权或者返回错误。</li>
+<li>步骤C：如果用户合法且同意授权，Authorization Server使用第一步Client提交的重定向地址重定向浏览器，并将token携带在URI Fragment中一并返回。</li>
+<li>步骤D：User-Agent 顺着重定向指示向Web-Hosted Client Resource 发起请求（按RFC2616该请求不包含Fragment）。User-Agent 在本地保留Fragment信息。</li>
+<li>步骤E：Web-Hosted Client Resource 返回一个网页（通常是带有嵌入式脚本的HTML），该网页能够提取URI中的Fragment和其他参数。</li>
+<li>步骤F：在User-Agent中使用上一步提供的脚本提取URL中的token。</li>
+<li>步骤G：User-Agent传送token给Client。</li>
+</ol>
+<p>Implicit 比起 Authorization Code 来说，少了Client使用授权码换Token的过程，而是直接把token提供给User-Agent让Client提取。整个流程中使用URL传递token，不需要Client的服务端参与，且没有严格验证Client信息，安全性欠佳。使用这个方式授权，需要在安全性和便利性之间做好权衡。</p>
+<p>流程中几个步骤涉及到的接口：</p>
+<p>重定向授权页（步骤A）</p>
+<p>请求例子：</p>
+<pre><code>GET /authorize?response_type=token&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1
+Host: server.example.com
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">response_type</td>
+<td style="text-align:left">表示授权类型，此处的值固定为”token”，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">client_id</td>
+<td style="text-align:left">表示客户端的ID，必选项</td>
+</tr>
+<tr>
+<td style="text-align:left">redirect_uri</td>
+<td style="text-align:left">表示重定向URI，可选项。如果不提供，Authorization Server会使用Client注册时的重定向URI进行重定向。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示申请的权限范围，可选项，多个scope值用空格分开</td>
+</tr>
+<tr>
+<td style="text-align:left">state</td>
+<td style="text-align:left">表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</td>
+</tr>
+</tbody>
+</table>
+<p>携带token重定向回Client（步骤C）</p>
+<p>请求例子：</p>
+<pre><code>HTTP/1.1 302 Found
+Location: http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&amp;state=xyz&amp;token_type=example&amp;expires_in=3600
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">access_token</td>
+<td style="text-align:left">表示访问令牌，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">token_type</td>
+<td style="text-align:left">表示令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。</td>
+</tr>
+<tr>
+<td style="text-align:left">expires_in</td>
+<td style="text-align:left">表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示权限范围，如果与客户端申请的范围一致，此项可省略。</td>
+</tr>
+</tbody>
+</table>
+<p>Implicit Grant  不严格验证Client，因此这里不提供 refresh_token（以防Client不经用户同意，使用refresh_token不断得到授权）。同时Implicit Grant 的access_token 是通过url的hash返回的，不会在网络上传输，但是还是存在泄漏的可能（如User-Agent本身不安全）。</p>
+<h3 id="Resource-Owner-Password-Credentials-Grant"><a href="#Resource-Owner-Password-Credentials-Grant" class="headerlink" title="Resource Owner Password Credentials Grant"></a>Resource Owner Password Credentials Grant</h3><p>这种授权方式其实是常见的用户名密码认证方式。使用这种授权的Client必须是高度可信的，比如操作系统。只有当其他的流程不能使用时，才启用这种方式，同时Authorization Server必须特别关注Client确保不会出现安全问题。整个过程中，Client不得保存用户的密码（只能由Client来保证，所以Client必须是高度可信的）。</p>
+<pre><code>+----------+
+| Resource |
+|  Owner   |
+|          |
++----------+
+     v
+     |    Resource Owner
+    (A) Password Credentials
+     |
+     v
++---------+                                  +---------------+
+|         |&gt;--(B)---- Resource Owner -------&gt;|               |
+|         |         Password Credentials     | Authorization |
+| Client  |                                  |     Server    |
+|         |&lt;--(C)---- Access Token ---------&lt;|               |
+|         |    (w/ Optional Refresh Token)   |               |
++---------+                                  +---------------+
+</code></pre><ol>
+<li>步骤A：resource owner 提供给Client用户名密码。</li>
+<li>步骤B：Client直接使用用户名密码向Authorization Server进行认证，并请求token。</li>
+<li>步骤C：Authorization Server认证Client信息和用户名密码，验证通过后返回token。</li>
+</ol>
+<p>流程中几个步骤涉及到的接口：</p>
+<p>Client提交用户名密码请求token（步骤B）</p>
+<p>请求例子：</p>
+<pre><code>POST /token HTTP/1.1
+Host: server.example.com
+Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&amp;username=johndoe&amp;password=A3ddj3w
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">grant_type</td>
+<td style="text-align:left">表示授权类型，此处的值固定为”password”，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">username</td>
+<td style="text-align:left">表示用户名，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">password</td>
+<td style="text-align:left">表示用户的密码，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示权限范围，可选项。</td>
+</tr>
+</tbody>
+</table>
+<p>Authorization Server返回token信息（步骤C）</p>
+<p>响应例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: application/json;charset=UTF-8</span><br><span class="line">Cache-Control: no-store</span><br><span class="line">Pragma: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">   <span class="attr">"access_token"</span>:<span class="string">"2YotnFZFEjr1zCsicMWpAA"</span>,</span><br><span class="line">   <span class="attr">"token_type"</span>:<span class="string">"example"</span>,</span><br><span class="line">   <span class="attr">"expires_in"</span>:<span class="number">3600</span>,</span><br><span class="line">   <span class="attr">"refresh_token"</span>:<span class="string">"tGzv3JOkF0XG5Qx2TlKWIA"</span>,</span><br><span class="line">   <span class="attr">"example_parameter"</span>:<span class="string">"example_value"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的响应参数跟Authorization Code 模式是一样的。</p>
+<h3 id="Client-Credentials-Grant"><a href="#Client-Credentials-Grant" class="headerlink" title="Client Credentials Grant"></a>Client Credentials Grant</h3><p>该模式是Client 访问实现与Authorization Server约定好的资源。Client以自己的名义，而不是以用户的名义，向Authorization Server进行认证。严格地说，Client Credentials 模式并不属于OAuth框架所要解决的问题。在这种模式中，用户直接向Client注册，Client以自己的名义要求Authorization Server提供服务，其实不存在授权问题。</p>
+<pre><code>+---------+                                  +---------------+
+|         |                                  |               |
+|         |&gt;--(A)- Client Authentication ---&gt;| Authorization |
+| Client  |                                  |     Server    |
+|         |&lt;--(B)---- Access Token ---------&lt;|               |
+|         |                                  |               |
++---------+                                  +---------------+
+</code></pre><ol>
+<li>步骤A：Client 向Authorization Server进行身份认证，并请求token。</li>
+<li>步骤B：Authorization Server 对 Client信息进行认证，有效则发放token。</li>
+</ol>
+<p>流程中几个步骤涉及到的接口：</p>
+<p>Client申请token（步骤A）</p>
+<p>请求例子：</p>
+<pre><code>POST /token HTTP/1.1
+Host: server.example.com
+Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+</code></pre><p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">grant_type</td>
+<td style="text-align:left">表示授权类型，此处的值固定为”client_credentials”，必选项。</td>
+</tr>
+<tr>
+<td style="text-align:left">scope</td>
+<td style="text-align:left">表示权限范围，可选项。</td>
+</tr>
+</tbody>
+</table>
+<p>这一步Authorization Server 必须验证Client。</p>
+<p>Authorization Server返回token信息（步骤B）</p>
+<p>响应例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: application/json;charset=UTF-8</span><br><span class="line">Cache-Control: no-store</span><br><span class="line">Pragma: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">   <span class="attr">"access_token"</span>:<span class="string">"2YotnFZFEjr1zCsicMWpAA"</span>,</span><br><span class="line">   <span class="attr">"token_type"</span>:<span class="string">"example"</span>,</span><br><span class="line">   <span class="attr">"expires_in"</span>:<span class="number">3600</span>,</span><br><span class="line">   <span class="attr">"refresh_token"</span>:<span class="string">"tGzv3JOkF0XG5Qx2TlKWIA"</span>,</span><br><span class="line">   <span class="attr">"example_parameter"</span>:<span class="string">"example_value"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的响应参数跟Authorization Code 模式也是一样的。</p>
+<h3 id="PKCE-Proof-Key-for-Code-Exchange"><a href="#PKCE-Proof-Key-for-Code-Exchange" class="headerlink" title="PKCE(Proof Key for Code Exchange)"></a>PKCE(Proof Key for Code Exchange)</h3><p>随着无服务端移动应用或SPA的流行，IETF针对Implicit授权提出了优化方案，在RFC-6749的四种Flow之外另外定义了一种更安全的PKCE模式（RFC-7636）。<br>PKCE的流程大概如下:</p>
+<pre><code>                                          +-------------------+
+                                          |   Authz Server    |
++--------+                                | +---------------+ |
+|        |--(A)- Authorization Request ----&gt;|               | |
+|        |       + t(code_verifier), t_m  | | Authorization | |
+|        |                                | |    Endpoint   | |
+|        |&lt;-(B)---- Authorization Code -----|               | |
+|        |                                | +---------------+ |
+| Client |                                |                   |
+|        |                                | +---------------+ |
+|        |--(C)-- Access Token Request ----&gt;|               | |
+|        |          + code_verifier       | |    Token      | |
+|        |                                | |   Endpoint    | |
+|        |&lt;-(D)------ Access Token ---------|               | |
++--------+                                | +---------------+ |
+</code></pre><p>这里引入了几个新的变量：t_m（摘要算法），code_verifier，code_challenge（即图中经过算法t_m计算后得到的t(code_verifier)参数）</p>
+<ol>
+<li>Client随机生成一串字符并作URL-Safe的Base64编码处理, 结果用作code_verifier。</li>
+<li>将这串字符通过SHA256哈希，并用URL-Safe的Base64编码处理，结果用作code_challenge。</li>
+<li>Client使用把code_challenge，请求Authorization Server，获取Authorization Code。（步骤A）</li>
+<li>Authorization Server 认证成功后，返回Authorization Code（步骤B）。</li>
+<li>Client 把Authorization Code 和code_verifier请求Authorization Server，换取Access Token。</li>
+<li>Authorization Server 返回 token。（步骤D）</li>
+</ol>
+<p><strong>由于中间人不能由code_challenge逆推code_verifier，因此即使中间人截获了code_challenge, Authorization Code等，也无法换取Access Token, 避免了implicit模式的安全问题。</strong></p>
+<p>流程中几个步骤涉及到的接口：</p>
+<p>Client重定向授权页（步骤A）</p>
+<p>请求例子：</p>
+<pre><code>https://{authorizationServerDomain}/oauth2/default/v1/authorize?client_id=0oabygpxgk9l
+XaMgF0h7&amp;response_type=code&amp;scope=openid&amp;redirect_uri=yourApp%3A%2Fcallback&amp;st
+ate=state-8600b31f-52d1-4dca-987c-386e3d8967e9&amp;code_challenge_method=S256&amp;code_
+challenge=qjrzSW9gMiUgpUvqgEPE4_-8swvyCtfOVvg55o5S_es
+</code></pre><p>response_type，client_id，redirect_uri，scope，state 跟implicit 模式是一样的。重点看下其他几个参数。</p>
+<p>参数说明：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">code_verifier</td>
+<td style="text-align:left">一串用来加密的 43 位到 128 位的随机字符串。由 A-Z，a-z，0-9，还有符号 -._~ 生成。</td>
+</tr>
+<tr>
+<td style="text-align:left">code_challenge</td>
+<td style="text-align:left">由 code_verifier 来生成，如果设备支持加密，则加密方式为：BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))。如果不支持，则直接使用 code_verifier。</td>
+</tr>
+<tr>
+<td style="text-align:left">code_challenge_method</td>
+<td style="text-align:left">生成 code_challenge 所用方法，分为 SHA256 和 plain。前者是指 SHA256 方法加密生成，后者是指直接使用 code_verifier，即不加密。</td>
+</tr>
+</tbody>
+</table>
+<p>Authorization Server返回token信息（步骤B）</p>
+<p>响应例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: application/json;charset=UTF-8</span><br><span class="line">Cache-Control: no-store</span><br><span class="line">Pragma: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">   <span class="attr">"access_token"</span>:<span class="string">"2YotnFZFEjr1zCsicMWpAA"</span>,</span><br><span class="line">   <span class="attr">"token_type"</span>:<span class="string">"example"</span>,</span><br><span class="line">   <span class="attr">"expires_in"</span>:<span class="number">3600</span>,</span><br><span class="line">   <span class="attr">"refresh_token"</span>:<span class="string">"tGzv3JOkF0XG5Qx2TlKWIA"</span>,</span><br><span class="line">   <span class="attr">"example_parameter"</span>:<span class="string">"example_value"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的响应参数跟Authorization Code 模式也是一样的。</p>
+<h2 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h2><p>对于token（Access Token和Refresh Token）需要使用什么样的格式，其实没有硬性要求，不同平台有不同的实现方式。这里列举两种常见的token规范，Bearer Token和JWT。</p>
+<h3 id="Bearer-Token"><a href="#Bearer-Token" class="headerlink" title="Bearer Token"></a>Bearer Token</h3><p>OAuth 诞生时就已经定义了两种token格式：Bearer Token 和 Mac Token，Mac 主要使用在无https的环境下，由于OAuth2.0已经要求所有参与者必须使用HTTPS，所以Mac格式不在我们今天讨论范围。Bearer Token由RFC-6750定义。</p>
+<p>Bearer Token 格式用BNF范式表示就是：</p>
+<pre><code>b64token    = 1*( ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot; / &quot;+&quot; / &quot;/&quot; ) *&quot;=&quot;
+credentials = &quot;Bearer&quot; 1*SP b64token
+</code></pre><p>换成程序员比较容易理解的正则表达式就是：</p>
+<pre><code>b64token = [0-9a-zA-Z-._~+/]+=
+credentials =  Bearer\s([0-9a-zA-Z-._~+/]+=)+
+</code></pre><p>所以所谓的Bearer Token就是以数字、大小写字母、破折号、小数点、下划线、波浪线、加号、正斜杠、等号结尾组成的Base64编码字符串。在HTTP传输过程中，需要以’Bearer ‘作为前缀标识。</p>
+<p><strong>Bearer Token 的三种传输方式</strong></p>
+<p>RFC-6750定义了三种传输Bearer Token 的方式，优先级依次递减：</p>
+<p><strong>Authorization Request Header Field（使用HTTP Header的Authorization字段传递）</strong></p>
+<pre><code>GET /resource HTTP/1.1
+Host: server.example.com
+Authorization: Bearer mF_9.B5f-4.1JqM
+</code></pre><p><strong>Form-Encoded Body Parameter（使用表单参数传递）</strong></p>
+<pre><code>POST /resource HTTP/1.1
+Host: server.example.com
+Content-Type: application/x-www-form-urlencoded
+
+access_token=mF_9.B5f-4.1JqM
+</code></pre><p><strong>URI Query Parameter（使用URI参数传递）</strong></p>
+<pre><code>GET /resource?access_token=mF_9.B5f-4.1JqM HTTP/1.1
+Host: server.example.com
+</code></pre><p>由于Cookie容易被CSRF攻击，不建议采用cookie的方式传输token。<br>尽量不要用URI参数的方法，因为浏览器历史记录、服务器日志等可能泄露URI上的机密信息。</p>
+<h3 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h3><p>JWT（JSON Web Token）是近几年移动端常用的token，它可以直接将一些信息编码传递，对客户端更友好。使用JWT有以下有点：</p>
+<ol>
+<li>验证token 不需要另外的缓存或者数据库，通过约定好的加密方式解密就行。</li>
+<li>因为json的通用性，所以JWT是可以进行跨语言支持的，像JAVA,JavaScript,NodeJS,PHP等很多语言都可以使用。</li>
+<li>因为有了payload部分，所以JWT可以在自身存储一些其他业务逻辑所必要的非敏感信息。<br>便于传输，jwt的构成非常简单，字节占用很小，所以它是非常便于传输的。</li>
+<li>它不需要在服务端保存会话信息, 所以它易于应用的扩展。</li>
+</ol>
+<p>使用JWT也必须注意一些问题：</p>
+<ol>
+<li>不应该在jwt的payload部分存放敏感信息，因为该部分是客户端可解密的部分。</li>
+<li>保护好secret私钥，该私钥非常重要。</li>
+<li>如果可以，请使用https协议传递JWT。</li>
+</ol>
+<p>JWT也有自己的RFC规范RFC-7519，这里简单介绍一下它的格式。详细请参考文末的RFC链接。</p>
+<p><img src="Untitled-2a5aa9d0-2e52-43d2-9a74-ef24c45f72ac.png" alt></p>
+<p>JWT的格式很简单，一个JWT字符串分为Header，Payload，Signature三部分，他们的原始字符串经过编码后由小数点分隔连接起来。</p>
+<p>Header记录着token类型和摘要算法，这里的明文最后要经过Base64URL编码：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"alg"</span>: <span class="string">"HS256"</span>,</span><br><span class="line">  <span class="attr">"typ"</span>: <span class="string">"JWT"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Payload记录着业务信息和用户数据（非敏感），字段可以根据需求自定义，<strong>处于安全性考虑，实现方会再加上expire过期时间字段控制生命周期</strong>。这里的明文同样也要经过Base64URL编码：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"sub"</span>: <span class="string">"1234567890"</span>,</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"John Doe"</span>,</span><br><span class="line">  <span class="attr">"admin"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Signature是Header和Payload经过摘要算法处理后的签名信息，使用的摘要算法需要同Header中alg属性一致，这里是HS256。secret是加密需要的密钥，使用对称加密算法的话密钥泄漏影响较大。如果使用非对称加密算法（如RSA256），使用的是公钥验证签名，风险就小很多：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HMACSHA256(</span><br><span class="line">  base64UrlEncode(header) + "." +</span><br><span class="line">  base64UrlEncode(payload),</span><br><span class="line">  secret)</span><br></pre></td></tr></table></figure>
+<p>连接编码后的三个部分，就得到一个JWT字符串：</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.rSWamyAYwuHCo7IFAgd1oRpSP7nzL7BF5t7ItqpKViM
+</code></pre><p>所以当Server端颁发JWT后，Client就可以根据约定好的secret，摘要算法验证Signature并提取Payload信息。</p>
+<h2 id="OAuth-面临的安全问题"><a href="#OAuth-面临的安全问题" class="headerlink" title="OAuth 面临的安全问题"></a>OAuth 面临的安全问题</h2><p>OAuth2.0 作为一个授权协议，安全问题尤为重要。OAuth大规模应用的这些年来，主要的安全问题可以分为以下几类：</p>
+<ol>
+<li>Client Authentication（客户端错误认证），作为Client的开发者，必须保护好自己的client_id client_secret，谨防盗用。</li>
+<li>Code or Token Steal（票据窃取），OAuth 是票据协议，无法区分使用票据的人是否合法。所以作为Authorization Server，必须对token的失效机制做好控制(如合理的失效时间，限制Code只能用一次，允许用户管理自己已授权的token)。作为Client，必须确保用户授权的token不被采集（最常见的问题就是在log中记录access token）</li>
+<li>Cross-Site Request Forgery(CSRF攻击)，Authorization Code Grant模式流程较长，存在CSRF隐患。</li>
+<li>Authorization Code Redirection URI Manipulation（重定向地址篡改），重定向地址篡改是钓鱼网站常用的攻击手段。</li>
+</ol>
+<p>前面两种是任何认证授权系统都需要考虑的安全问题，这里重点介绍下后面两种跟OAuth流程比较相关的安全问题。</p>
+<h3 id="CSRF攻击"><a href="#CSRF攻击" class="headerlink" title="CSRF攻击"></a>CSRF攻击</h3><p>在OAuth2.0流程中实施CSRF攻击的流程如下：</p>
+<p><img src="Untitled-4dc8306d-39bc-4d5d-937c-2e4ae4645294.png" alt></p>
+<p><strong>原理</strong></p>
+<ol>
+<li>攻击者预先准备好使用自己账号授权生成的 authorization code 的回调地址，引诱用户点击。</li>
+<li>用户点击后，变成使用攻击者的账号完成Oauth 流程得到token。</li>
+<li>在的第三方app绑定账号的场景，攻击者就可以使用自己的账号完成OAuth登陆用户的第三方app。</li>
+</ol>
+<p><strong>防范措施</strong></p>
+<p>要防止这样的攻击其实很容易，使用RFC规范中推荐的state参数即可，但是由于增加了开发工作量，很多开发者使用OAuth2.0时，经常忽略这个参数。具体细节如下：</p>
+<ol>
+<li>在 Authorization Code Grant或者implicit Grant流程的第一步，调用/authorize接口时，带上state参数，state的值由Client指定，生成规则需保证足够随机又有一定业务含义，他人无法轻易假冒。</li>
+<li>Client 需要保存state参数。</li>
+<li>在Authorization Server 认证成功重定向回Client时，会将state原样带回，此时Client需要验证state参数是否一致。</li>
+</ol>
+<h3 id="Authorization-Code-流程重定向地址篡改"><a href="#Authorization-Code-流程重定向地址篡改" class="headerlink" title="Authorization Code 流程重定向地址篡改"></a>Authorization Code 流程重定向地址篡改</h3><p><img src="Untitled-c5f08367-0a87-4b30-a497-d1194581e665.png" alt></p>
+<p>对重定向地址检查也是一个时常被忽略的安全弱点。</p>
+<p><strong>原理</strong></p>
+<ol>
+<li>对于一个正常的第三方Client应用A，攻击者自己也作为一个Client，伪造一个应用A的/authorize请求的链接，其中redirect_uri指向的是攻击者的Client。</li>
+<li>攻击者诱导用户点击伪造的链接，发起OAuth2.0的Authorization Code Grant流程。</li>
+<li>用户完成认证后，Authorization Server 携带Code重定向回攻击者Client。</li>
+<li>攻击者准备一个自己的Code，将上一步应用A的Code替换，伪造一条应用A的回调请求返回给应用A。（此时Code被替换成了攻击者的Code）</li>
+<li>应用A的Client在不清楚Code被替换的情况下，继续完成Authorization Code Grant流程，使用攻击者的Code换取Access Token。</li>
+</ol>
+<p>此时用户走完OAuth流程，但是在应用A上得到的却是攻击者帐号的授权。大家会觉得，这样有什么问题，又不是用户的授权泄漏。这种攻击方式可以针对绑定帐号的场景，比如用户本来要将豆瓣帐号与微博帐号关联，使用微博的OAuth授权来登陆豆瓣。而被这样钓鱼以后，自己的豆瓣帐号绑定的是攻击者的微博帐号，此时攻击者就可以用他的微博帐号登陆用户的豆瓣帐号了。</p>
+<p><strong>防范方法</strong></p>
+<ol>
+<li>Client 注册时，需要开发者提供域名与Client绑定。</li>
+<li>Authorization Server对/authorize 接口验证的redirect_uri 参数验证，确认与Client注册时提供的域名一致。</li>
+<li>Authorization Server对/access_token 接口的redirect_uri 参数进行验证，保证与Client发起 /authorize请求时的redirect_uri一致。</li>
+<li>对于Authorization Server的Code换token接口，可以要求Client提供client_id和secret，校验此时的code是否产生自同一个client_id。</li>
+</ol>
+<p>对于上面提到的CSRF和钓鱼攻击，Client方面如果增加一些授权成功后的提示给用户（比如平台成功与xxx帐号绑定），可以避免用户无意识地授权的情况发生。上面的例子只是简单展示了OAuth授权中需要开发者关注的安全细节，关于OAuth安全想要了解更多，可以参考文末的OAuth安全指南。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ol>
+<li>OAuth2.0 规范将参与者划分为 Resource Owner，Resource Server，Client，Authorization Server四种角色。</li>
+<li>RFC-6749定义了四种OAuth2.0 Grant Flow：Authorization Code Grant，Implicit Grant，Resource Owner Password Credentials Grant，Client Credentials Grant。其中前两种是比较常用的OAuth2.0授权模式。</li>
+<li>对于移动端APP或者SPA应用，可以考虑使用PKCE模式减少Implicit Grant的安全风险。</li>
+<li>对于Token的格式，建议使用Bearer Token或者JWT。</li>
+<li>由于OAuth2.0的Flow步骤较长，不管是Client端还是Authorization Server端，在使用OAuth2.0的时候，最好严格按照RFC规范执行，可以最大程度地减少安全隐患。同时也要注意业界关于OAuth漏洞的披露，及时修复漏洞。</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li>OAuth2.0: <a href="https://oauth.net/2/" target="_blank" rel="noopener">https://oauth.net/2/</a></li>
+<li>OAuth2.0(RFC-6749): <a href="https://tools.ietf.org/html/rfc6749" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc6749</a></li>
+<li>PKCE(RFC-7636): <a href="https://tools.ietf.org/html/rfc7636" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7636</a></li>
+<li>Bearer token(RFC-6750): <a href="https://tools.ietf.org/html/rfc6750" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc6750</a></li>
+<li>JWT(RFC-7519): <a href="https://tools.ietf.org/html/rfc7519" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7519</a></li>
+<li>乌云平台（备份）OAuth安全指南: <a href="http://drops.xmd5.com/static/drops/papers-1989.html" target="_blank" rel="noopener">http://drops.xmd5.com/static/drops/papers-1989.html</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/06/02/OAuth2-0面面观/" data-id="cki1s49qy0009bkuc838nk4ym" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Effective Java 3rd edition 读书笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/20/Effective Java 3rd edition 读书笔记/" class="article-date">
+  <time datetime="2019-01-20T11:20:00.000Z" itemprop="datePublished">2019-01-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/20/Effective Java 3rd edition 读书笔记/">Effective Java 3rd edition 读书笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近把去年出版的 Effective Java 3rd Edition 的新章节读完了，把笔记统一整理一下。</p>
+<h2 id="Lambdas-and-Streams"><a href="#Lambdas-and-Streams" class="headerlink" title="Lambdas and Streams"></a>Lambdas and Streams</h2><h3 id="Item-42-Prefer-lambdas-to-anonymous-class"><a href="#Item-42-Prefer-lambdas-to-anonymous-class" class="headerlink" title="Item 42: Prefer lambdas to anonymous class"></a>Item 42: Prefer lambdas to anonymous class</h3><p>Java 8 以前，模板方法、函数方法基本是用匿名类实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// before JDK1.8  use anonymous object</span></span><br><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete! </span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123; </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123; </span><br><span class="line">		<span class="keyword">return</span> Integer.compare(s1.length(), s2.length()); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Java 8 开始，可以使用lambda表达式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// before JDK1.8  use anonymous object</span></span><br><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete! </span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123; </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123; </span><br><span class="line">		<span class="keyword">return</span> Integer.compare(s1.length(), s2.length()); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>Java 8 中的 lambda 表达式时基于函数式接口（Function Interface），它就是一个<strong>有且仅有一个抽象方法</strong>，但是可以有多个非抽象方法的接口。函数式接口可以被隐式转换为<br>lambda 表达式。</p>
+<p>比如 上面Collections.sort中的 Comparator 变量，它的函数式接口定义为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> */</span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Comparator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(List&lt;T&gt; list, Comparator&lt;? <span class="keyword">super</span> T&gt; c)</span> </span>&#123;</span><br><span class="line">        list.sort(c);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// other method …</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以从Java 8 开始，不要创建一个匿名内部类作为函数对象，除非函数式方法入参没有定义函数式接口。</p>
+<h3 id="Item-43-Prefer-method-references-to-lambdas"><a href="#Item-43-Prefer-method-references-to-lambdas" class="headerlink" title="Item 43: Prefer method references to lambdas"></a><strong>Item 43: Prefer method references to lambdas</strong></h3><p>Java 8 开始提供一种比 lambda 更简洁的方式作为函数对象：方法引用（method references）</p>
+<p>方法引用和 lambda 表达式对比：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// method reference</span></span><br><span class="line">map.merge(key, <span class="number">1</span>, Integer::sum);</span><br><span class="line"><span class="comment">// lambda</span></span><br><span class="line">map.merge(key, <span class="number">1</span>, (count, incr) -&gt; count + incr);</span><br></pre></td></tr></table></figure>
+<p>目前方法引用唯一用途是用来简化 lambda 表达式，用方法名来代替 lambda。</p>
+<p>方法引用的几种形式：</p>
+<p><strong>引用静态方法</strong> </p>
+<p>ContainingClass::staticMethodName </p>
+<p>例子: String::valueOf，对应的Lambda：(s) -&gt; String.valueOf(s) </p>
+<p>比较容易理解，和静态方法调用相比，只是把.换为::</p>
+<p><strong>引用特定对象的实例方法</strong> </p>
+<p>containingObject::instanceMethodName </p>
+<p>例子: x::toString，对应的Lambda：() -&gt; this.toString() </p>
+<p>与引用静态方法相比，都换为实例的而已。</p>
+<p><strong>引用特定类型的任意对象的实例方法</strong> </p>
+<p>ContainingType::methodName </p>
+<p>例子: String::toString，对应的Lambda：(s) -&gt; s.toString() </p>
+<p>太难以理解了。难以理解的东西，也难以维护。建议还是不要用该种方法引用。 </p>
+<p>实例方法要通过对象来调用，方法引用对应Lambda，Lambda的第一个参数会成为调用实例方法的对象。</p>
+<p><strong>引用构造函数</strong> </p>
+<p>ClassName::new </p>
+<p>例子: String::new，对应的Lambda：() -&gt; new String() </p>
+<p>构造函数本质上是静态方法，只是方法名字比较特殊。</p>
+<p>有些情况下，使用方法引用的代码 会比 lambda 更长</p>
+<p>比如这个在 GoshThisClassNameIsHumongous 类中的方法: </p>
+<p>用方法引用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.execute(GoshThisClassNameIsHumongous::action);</span><br></pre></td></tr></table></figure>
+<p>等价的 lambda 是: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.execute(() -&gt; action());</span><br></pre></td></tr></table></figure>
+<p>下面是各种方法引用的例子：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Method ref Type</th>
+<th>Example</th>
+<th>Lambda Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Static</td>
+<td>Integer::parseInt</td>
+<td>str -&gt; Inter.parseInt(str)</td>
+</tr>
+<tr>
+<td style="text-align:left">Bound</td>
+<td>Instant.now()::isAfter</td>
+<td>Instant then = Instant.now();<br>t -&gt; then.isAfter(t)</td>
+</tr>
+<tr>
+<td style="text-align:left">Unbound</td>
+<td>String::toLowerCase</td>
+<td>str -&gt; str.toLowerCase()</td>
+</tr>
+<tr>
+<td style="text-align:left">Class Constructor</td>
+<td>TreeMap&lt;K, V&gt; :: new</td>
+<td>() -&gt; new TreeMap&lt;K, V&gt;</td>
+</tr>
+<tr>
+<td style="text-align:left">Array Constructor</td>
+<td>int[] :: new</td>
+<td>len -&gt; new int[len]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注</strong>： Bound unbound reference method 用法语义比较模糊，感觉用 Lambda 描述更清楚。</p>
+<p><strong>总而言之，当方法引用更简单明了时，就用它，否则就用 lambda。</strong></p>
+<h3 id="Item-44-Favor-the-use-of-standard-functional-interfaces"><a href="#Item-44-Favor-the-use-of-standard-functional-interfaces" class="headerlink" title="Item 44: Favor the use of standard functional interfaces"></a>Item 44: Favor the use of standard functional interfaces</h3><p>JDK 包中已经默认提供了多种函数式接口，所以尽量使用自带的而不是自己写函数式接口。</p>
+<p>比如下面的例子，我们自定义了一个函数式接口，需要让重写的类有一一个 remove 的默认方法，入参是 map自己的引用和eledest元素，使用fuction interface可以先定义一个接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Unnecessary functional interface; use a standard one instead. </span></span><br><span class="line"><span class="meta">@FunctionalInterface</span> <span class="class"><span class="keyword">interface</span> <span class="title">EldestEntryRemovalFunction</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span>&#123; </span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Map&lt;K,V&gt; map, Map.Entry&lt;K,V&gt; eldest)</span></span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实这个接口，JDK已经有默认实现，就是BiPredicate 接口。</p>
+<h4 id="标准函数式接口分类"><a href="#标准函数式接口分类" class="headerlink" title="标准函数式接口分类"></a>标准函数式接口分类</h4><p>Java 自带的函数式接口分为几类：Operator，Predicate，Function，Supplier，Consumer。</p>
+<ol>
+<li><p>Operator 接口表示入参和返回值是同一种类型的函数，比如下面代表一元、二元运算的接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UnaryOperator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Function</span>&lt;<span class="title">T</span>, <span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &lt;T&gt; <span class="function">UnaryOperator&lt;T&gt; <span class="title">identity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t -&gt; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+   <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BinaryOperator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">BiFunction</span>&lt;<span class="title">T</span>,<span class="title">T</span>,<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">BinaryOperator&lt;T&gt; <span class="title">minBy</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(comparator);</span><br><span class="line">        <span class="keyword">return</span> (a, b) -&gt; comparator.compare(a, b) &lt;= <span class="number">0</span> ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">BinaryOperator&lt;T&gt; <span class="title">maxBy</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span> </span>&#123;</span><br><span class="line">        Objects.requireNonNull(comparator);</span><br><span class="line">        <span class="keyword">return</span> (a, b) -&gt; comparator.compare(a, b) &gt;= <span class="number">0</span> ? a : b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><p>Predicate 有些地方叫做谓词函数，用来表示返回值是boolean 的函数，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Predicate</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">test</span><span class="params">(T t)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Function 类型的函数接口表示入参和返回值不同类型的函数，意为将参数T传给一个函数，返回R。即 R = Function(T)，比如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BiFunction</span>&lt;<span class="title">T</span>, <span class="title">U</span>, <span class="title">R</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">R <span class="title">apply</span><span class="params">(T t, U u)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Supplier 类型的接口，表示一个没有入参，有返回值的函数，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Supplier</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Supplier 常用于 Stream计算中new 对象。</p>
+</li>
+<li><p>Consumer 类型的函数接口表示接受一个泛型参数，但是不返回数据，如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Consumer</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">accept</span><span class="params">(T t)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="FunctionalInterface-注解"><a href="#FunctionalInterface-注解" class="headerlink" title="@FunctionalInterface  注解"></a>@FunctionalInterface  注解</h4><p>@FunctionalInterface 有点像 @Override 注解，注释告诉编译器这是个函数式接口，没有任何功能上的作用。只有一个抽象方法的接口，不使用这个注解也是函数式接口。</p>
+<p>需要函数式接口时，先看一下Java 提供的标准接口能否满足，不满足再自己实现，实现时最好遵循标准函数式接口的定义风格。</p>
+<h3 id="Item-45-Use-streams-judiciously"><a href="#Item-45-Use-streams-judiciously" class="headerlink" title="Item 45: Use streams judiciously"></a>Item 45: Use streams judiciously</h3><h4 id="一些-stream-API-的概念"><a href="#一些-stream-API-的概念" class="headerlink" title="一些 stream API 的概念"></a>一些 stream API 的概念</h4><p>stream API 里有两种抽象概念: </p>
+<ol>
+<li>the stream: 表示Java 中的各种集合</li>
+<li>stream pipe-line: 表示对于这些集合的多重计算操作，有0个或多个 intermediate operations 一个 terminal<br>operation 组成。 intermediate operations 从一个stream传到另一个stream，terminal operation 对接最后一个 intermediate operations，对stream做最后一次操作（一般是排序、打印、转换集合结果等操作）。</li>
+</ol>
+<p>Stream pipelines 是懒式（lazily）执行的，只有当碰到 terminal operations 时，前面所有的 intermediate operations 才会执行。不带 terminal operations的stream操作是静默的，永远不会执行。</p>
+<p>stream api 是流式的。</p>
+<p>默认情况下stream pipleline 是串行（squentially）执行的</p>
+<h4 id="过度使用-stream-让程序难以阅读和维护"><a href="#过度使用-stream-让程序难以阅读和维护" class="headerlink" title="过度使用 stream 让程序难以阅读和维护"></a>过度使用 stream 让程序难以阅读和维护</h4><p>在没有显示类型的情况下，合适的参数命名是保持stream 流有良好可读性的关键。</p>
+<p><strong>避免使用 stream去处理字符（char）数据</strong> </p>
+<p>例如： </p>
+<p><code>&quot;Hello world!&quot;.chars().forEach(System.out::print);</code>  中  <code>&quot;Hello world!&quot;.chars()</code>返回的是<code>int[]</code>数组的stream，所以输出的<strong>不是 Hello world!</strong>而是 <strong>7210110810811132119i11111410810033</strong>。因为stream API中只支持 int long double三种primitive ype 的stream，没有char的stream。</p>
+<p><strong>只有在值得这么做的情况下，才需要使用sream重构已存在的代码或在新代码中使用sream。</strong>否则容易引入新问题。</p>
+<h4 id="几种适合使用stream-api的场景"><a href="#几种适合使用stream-api的场景" class="headerlink" title="几种适合使用stream api的场景"></a>几种适合使用stream api的场景</h4><ol>
+<li>统一转换元素序列（如集合中的元素类型）。</li>
+<li>过滤元素序列。</li>
+<li>对序列元素进行单一聚合操作（如计算和，最小值，连接等）</li>
+<li>将序列元素转化为集合，或者以特定条件为它们分组。</li>
+<li>以指定条件搜索序列元素。</li>
+</ol>
+<p><strong>当不知道是否需要使用sream时，两种方案都尝试，看哪个更合适。</strong></p>
+<h3 id="Item-46-Prefer-side-effect-free-functions-in-streams-（没有副作用）"><a href="#Item-46-Prefer-side-effect-free-functions-in-streams-（没有副作用）" class="headerlink" title="Item 46: Prefer side-effect-free functions in streams  （没有副作用）"></a>Item 46: Prefer side-effect-free functions in streams  （没有副作用）</h3><p>尽量把<strong>foreach</strong> 操作用于输出stream结果，而不是计算逻辑。</p>
+<p>总的来说，stream 的流式编程是没有副作用（side-effect-free）的函数对象。</p>
+<p>为了正确使用 stream，必须知道 collectors 操作，它用于产生输出集合。几个重要的collectors 工厂是：<strong>toList, toSet, toMap, groupingBy, joining.</strong></p>
+<h3 id="Item-47-Prefer-Collection-to-Stream-as-a-return-type"><a href="#Item-47-Prefer-Collection-to-Stream-as-a-return-type" class="headerlink" title="Item 47: Prefer Collection to Stream as a return type"></a><strong>Item 47: Prefer Collection to Stream as a return type</strong></h3><p>Collection 和它的子类最适合作为返回序列数据的方法的返回值类型。Stream 没有继承或实现 Interable 接口，所以它不能使用 for-each 遍历，所以当某个方法需要返回序列时，优先使用 Collection 返回而不是 Stream。<strong>因为Collection 接口不仅可以被for-each遍历，它还有一个sream方法。</strong>你的方法的调用方可能需要返回的序列结果进行sream运算，或者仅仅只要遍历访问它。</p>
+<h3 id="Item-48-Use-caution-when-making-streams-parallel"><a href="#Item-48-Use-caution-when-making-streams-parallel" class="headerlink" title="Item 48: Use caution when making streams parallel"></a><strong>Item 48: Use caution when making streams parallel</strong></h3><p>在并发编程中，违反安全性和活跃度（liveness）的情况是没法避免的，stream 的 parallel 也不例外。</p>
+<p>看下面这段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// Stream-based program to generate the first 20 Mersenne primes </span></span><br><span class="line"><span class="comment">// if change to parallel invoke, it will let cpu usage to 90 percent</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    primes().map(p -&gt; TWO.pow(p.intValueExact()).subtract(ONE))</span><br><span class="line">        .filter(mersenne -&gt; mersenne.isProbablePrime(<span class="number">50</span>)).limit(<span class="number">20</span>)</span><br><span class="line">        .forEach(System.out::println); </span><br><span class="line">&#125; </span><br><span class="line"><span class="function"><span class="keyword">static</span> Stream&lt;BigInteger&gt; <span class="title">primes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Stream.iterate(TWO, BigInteger::nextProbablePrime); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假如源代码是<code>Stream.iterate</code>，或者有使用limit()，再使用 parallel 并行化一个stream pipeline 不大可能提高性能。<strong>所以不要随意地使用 parallel 来并行化 stream 计算。</strong></p>
+<p>作为一个规则，在以下类型数据上使用stream parallel 比较容易获得性能收益：ArrayList, HashMap, HashSet, and ConcurrentHashMap instances; arrays; int ranges; and long ranges. 因为<strong>这些数据结构易于拆分子任务，且有较好的存储局部性（locality of reference），所以能在 stream 的并行任务上获得较好效果。</strong></p>
+<p>局部性原理可以参考：</p>
+<ol>
+<li><a href="https://www.zhihu.com/question/25142664" target="_blank" rel="noopener">https://www.zhihu.com/question/25142664</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/30127242" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30127242</a></li>
+</ol>
+<p>如果自己定义了 Stream，Iterable，Collection 接口的接口实现，想要在使用parallel时实现好的性能，需要重写 <strong>spliterator</strong> 方法。</p>
+<p>在正确使用的前提下，使用 parallel 处理stream 流，可以得到近似处理器核心数的线性性能提升。某些领域，比如机器学习和数据处理，特别适合这种性能提升。</p>
+<p>总的来说，不要尝试使用parallel处理stream，除非你有足够的理由去保证这么做能大幅提高性能并保证程序正确性。<strong>确保你的代码在使用parallel后仍然正确。</strong></p>
+<h2 id="Optionals"><a href="#Optionals" class="headerlink" title="Optionals"></a>Optionals</h2><p>Java 8 中新增的 Optional 容器类，它封装了可能为null的对象，强制使用方在使用时进行检查，防止NPE问题。</p>
+<p>容器类型（<strong>collections, maps, streams, arrays, and optionals</strong> ）不应该被包换到Optional对象中。</p>
+<p>当你的方法可能没有返回值时，你应该使用Optional<t>作为返回值类型，这样调用方必须处理没有返回值的情况，避免了NPE问题。</t></p>
+<p><strong>不可以用 Optional 去包装原始类型（Boolean, Byte, Character, Short, and Float）</strong>，因为 Optional 会对其进行两次装箱（boxing）。这种情况应该直接使用 <strong>OptionalInt, OptionalLong, and OptionalDouble</strong>。</p>
+<p>不要使用Optional对象最为Map的key或者数组的元素。</p>
+<p>因为涉及的装箱拆箱操作，对于性能要求严苛的方法，还是使用返回null的方式处理控制比较合适。</p>
+<h2 id="Default-methods-in-interfaces"><a href="#Default-methods-in-interfaces" class="headerlink" title="Default methods in interfaces"></a>Default methods in interfaces</h2><p>Java 8中引入默认方法是为了让老接口支持lambda表达式。在老接口中添加默认方法，这些接口的实现类不会在编译器报错。 </p>
+<h2 id="try-with-resources"><a href="#try-with-resources" class="headerlink" title="try-with-resources"></a>try-with-resources</h2><h3 id="Item-9-Prefer-try-with-resources-to-try-finally"><a href="#Item-9-Prefer-try-with-resources-to-try-finally" class="headerlink" title="Item  9: Prefer try-with-resources to try-finally"></a>Item  9: Prefer try-with-resources to try-finally</h3><p>Java 7 以后，应该总是使用  try-with-resources 方式而不是 try-finally 方式处理资源操作。</p>
+<p>自动关闭资源的语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources - the the best way to close resources! </span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path)</span> <span class="keyword">throws</span> IOException </span>&#123; </span><br><span class="line">	<span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader( </span><br><span class="line">	<span class="keyword">new</span> FileReader(path))) &#123; </span><br><span class="line">	<span class="keyword">return</span> br.readLine(); </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>要使用 try-with-resources 语法，资源类必须实现 AutoCloseable   接口。</strong></p>
+<h2 id="safeVarags"><a href="#safeVarags" class="headerlink" title="@safeVarags"></a>@safeVarags</h2><p>混用泛型和可变参数时，可能存在安全问题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// Mixing generics and varargs can violate type safety! </span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">dangerous</span><span class="params">(List&lt;String&gt;... stringLists)</span> </span>&#123;</span><br><span class="line">	List&lt;Integer&gt; intList = List.of(<span class="number">42</span>);</span><br><span class="line">	Object[] objects = stringLists;</span><br><span class="line">	objects[<span class="number">0</span>] = intList;</span><br><span class="line">	<span class="comment">// Heap pollution</span></span><br><span class="line">	String s = stringLists[<span class="number">0</span>].get(<span class="number">0</span>); <span class="comment">// ClassCastException </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>保存一个值到泛型的可变参数数组中是不安全的，编译器也会提出警告：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Warning look like <span class="keyword">this</span>:</span><br><span class="line">warning: [unchecked] Possible heap pollution from </span><br><span class="line">    parameterized vararg type List&lt;String&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>@SafeVarargs</strong>  提供了一种声明，表示该方法的作者保证该方法是类型安全的，编译器会忽略安全检查，不显示警告。</p>
+<p>只要有混用泛型和可变参数的方法，都要声明<strong>@SafeVarargs</strong> ，同时作者必须保证方法内部不会出现上面例子的Heap pollution 的类型安全问题。</p>
+<p>以下情况的可变参数方法是安全的：</p>
+<ol>
+<li>不在可变参数数组中保存任何数据</li>
+<li>让可变参数数组的数据对非信任代码不可见。</li>
+</ol>
+<p>@SafeVarargs  只在费重载方法中有效，且java 9之前只能用静态方法。java9中添加了私有方法的使用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2019/01/20/Effective Java 3rd edition 读书笔记/" data-id="cki1s49qi0001bkucukja7djv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Practical Vim 读书笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/17/Practical Vim 读书笔记/" class="article-date">
+  <time datetime="2018-11-17T11:34:00.000Z" itemprop="datePublished">2018-11-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/17/Practical Vim 读书笔记/">Practical Vim 读书笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>刚工作的时候，看了王垠的一篇《编辑器之神和神之编辑器》，便落入了使用vim的深坑。工作了那么多年发现每个一段时间重新看vim东西总能学到新的知识，最近快速读完了《Practical Vim》,在这里把一些以前没注意的小技巧再重新整理一下。</p>
+<h2 id="normal-mode"><a href="#normal-mode" class="headerlink" title="normal mode"></a>normal mode</h2><ul>
+<li><code>R</code>进入逐字替换</li>
+<li>用<code>f{char}</code>搜索某个字符（比如c），按<code>;</code>可以跳到下一个c位置，按<code>,</code>跳到上一个c</li>
+<li>使用相对行号时，如何删除当前行开始向下数3行的内容? <code>d3j</code></li>
+<li><code>q/</code>  查看使用<code>/</code>搜索过的历史命令</li>
+<li><code>q:</code> 查看 ex 命令历史</li>
+<li><code>m{char}</code>  标记位置，<code>`{char}</code> 调整到标记位置，其中<code>{char}</code>用<strong>小写字母</strong>是文件内标记，用<strong>大写字母</strong>是全局标记（可以在文件之间跳转）</li>
+<li><strong>0（数字0）</strong>是复制专用寄存器，只有y命令会覆盖它，使用y命令后，”0p可以黏贴寄存器内容。覆盖无名寄存器的操作（x,c,d等）不会覆盖0寄存器</li>
+</ul>
+<h2 id="insert-mode"><a href="#insert-mode" class="headerlink" title="insert mode"></a>insert mode</h2><ul>
+<li><code>&lt;C-r&gt;{register}</code>   直接输出寄存器的值,比如<code>&lt;C-r&gt;a</code>是输出a寄存器内容</li>
+<li><code>&lt;C-r&gt;=6*35&lt;CR&gt;</code>  使用表达式寄存器=，计算6*35的值并输出</li>
+</ul>
+<h2 id="virtual-mode"><a href="#virtual-mode" class="headerlink" title="virtual mode"></a>virtual mode</h2><ul>
+<li><code>v</code>高亮选择文本，<code>gv</code>重选上次高亮选区</li>
+<li>高亮选中文本后，按<code>o</code>可以将光标在高亮文本起始末尾跳转，方便调整高亮文本</li>
+</ul>
+<h2 id="Ex-command-mode"><a href="#Ex-command-mode" class="headerlink" title="Ex command mode"></a>Ex command mode</h2><ul>
+<li><code>[range] m {address}</code>  把[range] 范围的文本移动到{address}</li>
+<li><code>[range] t {address}</code>  把[range] 范围的文本复制到{address}</li>
+<li><code>&lt;C-r&gt;{register}</code> 在命令行黏贴寄存器内容</li>
+<li><code>[range] normal {command</code>} 使用命令行执行普通模式命令，如 <code>% normal A;</code>  会在所有行后面追加字符<strong>;</strong></li>
+<li>重复上一次执行的Ex 命令，使用 <code>@:</code></li>
+<li><code>&lt;C-d&gt;</code> 显示可用命令列表，<code>Tab</code>补全命令</li>
+<li><code>&lt;C-r&gt;&lt;C-w&gt;</code>插入当前光标下的单词到编辑的command中</li>
+</ul>
+<p>[range]  范围语法支持：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>文本第一行</td>
+</tr>
+<tr>
+<td>$</td>
+<td>文本的最后一行</td>
+</tr>
+<tr>
+<td>0</td>
+<td>虚拟行，位于文本第一行上方</td>
+</tr>
+<tr>
+<td>.</td>
+<td>光标所在行</td>
+</tr>
+<tr>
+<td>‘m</td>
+<td>位置标记m所在行</td>
+</tr>
+<tr>
+<td>‘&lt;</td>
+<td>高亮选区的起始行</td>
+</tr>
+<tr>
+<td>‘&gt;</td>
+<td>高亮选区的结束行</td>
+</tr>
+<tr>
+<td>%</td>
+<td>整个文件</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>允许使用<code>+{number}</code>，<code>-{number}</code>对[range]进行偏移</li>
+<li>[range] 也支持使用模式匹配</li>
+</ol>
+<h2 id="Macro-（宏）"><a href="#Macro-（宏）" class="headerlink" title="Macro （宏）"></a>Macro （宏）</h2><p>录制宏:</p>
+<ol>
+<li><code>q{register}</code> 开启录制</li>
+<li>录入宏的内容</li>
+<li><code>q</code>结束录制</li>
+</ol>
+<p>调用宏：<code>@{register}</code><br>批量调用： <code>n@{register}</code>   ,这里n是执行宏的次数<br>向录制好的宏追加内容： 用 <code>q{register大写}</code> 开始录制，录制后的内容会追加到原来的宏后面。比如原来用 <code>qa</code> 录制了 <code>dwi</code> 操作，想要再后面加<code>j</code>，可以：</p>
+<ol>
+<li>用 <code>qA</code> 开启宏a的追加</li>
+<li>录制<code>j</code></li>
+<li>按<code>q</code>结束录制</li>
+<li>此时<code>@a</code>执行的操作就是<code>dwij</code></li>
+</ol>
+<p>编辑宏:<br>宏用的寄存器和复制黏贴的寄存器是一样的，需要编辑好录制的宏，可以先将寄存器输出，编辑后复制到寄存器中，继续用<code>@{register}</code>执行宏。比如原来寄存器<code>a</code>录制的宏是<code>dwij</code>，现在想要改成<code>dwi2j</code>，可以：</p>
+<ol>
+<li>在normal mode下，”ap 黏贴出宏内容 dwij </li>
+<li>将内容改成 dwi2j</li>
+<li>选中文本，y”a 覆盖寄存器a内容</li>
+<li>再执行@a，操作就是 dwi2j了</li>
+</ol>
+<h2 id="Pattern-模式匹配"><a href="#Pattern-模式匹配" class="headerlink" title="Pattern 模式匹配"></a>Pattern 模式匹配</h2><p>vim 的 search(搜索)，substitute(替换)命令都支持Pattern，也就是正则表达式匹配<br>默认情况下，<code>/</code> 搜索模式的正则表达式，正则表达式的元字符 <code>.*()</code>等，都需要加<code>\</code>转义，也就是在默认情况下<code>/.*</code>搜索的是 <code>.*</code>字符串，而不是<strong>任意个</strong>字符</p>
+<p>magic:<br>在搜索表达式前加<code>\m</code>使用magic功能，除了 <code>$.*^</code>之外的元字符要加反斜杠，如<code>\m.*</code>搜索的就是任意字符，若不是<code>.*</code>字符串</p>
+<p>very magic:<br>在搜索表达式前<code>\v</code>使用very magic 功能，正则表达式任何元字符都不用加<code>\</code>，如：<code>/\v(a.c){3}$</code>  就是查找行尾三个字符是<strong>a{char}c</strong>的表表达式(如abc,acc,aec)。</p>
+<p>强制关闭magic:<br>如果已经<code>set magic</code>，要在搜索表达式里强制不用magic，就在前面加<code>\V</code>,比如已经开启了<code>set magic</code>，使用 <code>/\V.*</code>搜索的是<code>.*</code>字符串。</p>
+<p>单词界定：<br>在very magic 模式下，使用<code>&lt;word&gt;</code>可以以单词为界匹配字符，而不会匹配到其他内容。比如目前有个文本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">abc aa</span><br><span class="line">abcdedf</span><br><span class="line">1234</span><br><span class="line">123abc</span><br></pre></td></tr></table></figure></p>
+<p>用 <code>/\v&lt;abc&gt;</code>搜索时，只有第一行 <code>abc</code> 匹配，<code>123abc</code>不会匹配。</p>
+<p>模式匹配边界：<br>一个匹配的边界通常对应于一个模式的起始与结尾。但我们可以使用元字符 <code>\zs</code> 与 <code>\ze</code>对匹配进行裁剪，使其成为这个完整模式的一个子集（参见 :h /\zs ） 。元 字符 <code>\zs</code>标志着一个匹配的起始，而元字符<code>\ze</code>则用来界定匹配的结束。将二者相结合，我们可以定义一个特殊的模式，它们可以让我们定义一个模式匹配一个较大的文本范围，然后再收窄匹配范围。与单词定界符类似，<code>\zs</code>与<code>\ze</code> 均为零宽度元字符。 </p>
+<p>vim中模式的特殊元字符 ，<code>\zs</code> 与<code>\ze</code>关键字示例：<br><img src="http://ww1.sinaimg.cn/large/720db05fgy1fxbbtpdsb4j20ew0383yi.jpg" alt></p>
+<p>必须转义的情况：</p>
+<ol>
+<li>正向查找时，<code>/</code>必须转义。</li>
+<li>反向查找时，<code>?</code>必须转义。</li>
+<li>每次都要转义<code>\</code>。</li>
+</ol>
+<p>查找&amp;替换<br>显示当前查找关键词个数： <code>:%s///gn</code></p>
+<p>将光标定位到匹配结果词尾：<code>/lang/e</code> </p>
+<p>重用上次查找的模式<br><code>:%s/\va.c/123/g</code><br>等价于以下两个命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/\v.c</span><br><span class="line">%s//123/g</span><br></pre></td></tr></table></figure></p>
+<h2 id="global-命令"><a href="#global-命令" class="headerlink" title="global 命令"></a>global 命令</h2><p>:global命令的广义形式如下所示：<br><code>:g/{pattern}/[range][cmd]</code><br><code>:g/{re}/{cmd}</code>  在匹配的行上执行命令，如 <code>:g/re/d</code>  ，删除包含re字符的行<br><code>:v/{re}/{cmd}</code>  在非匹配的行上执行命令  如 <code>:v/re/d</code>  ，删除<strong>不包含</strong>re字符的行</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2018/11/17/Practical Vim 读书笔记/" data-id="cki1s49qx0008bkucm147nxzl" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vim/">vim</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java中的CAS与ABA问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/21/Java中的CAS与ABA问题/" class="article-date">
+  <time datetime="2018-10-21T12:01:00.000Z" itemprop="datePublished">2018-10-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/21/Java中的CAS与ABA问题/">Java中的CAS与ABA问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天面试别人的时候，提到了CAS，本来想要引导他说出CAS潜在的ABA问题，发现自己也没发简单的向他解释清楚,需要好好梳理下。</p>
+<h2 id="什么是-CAS"><a href="#什么是-CAS" class="headerlink" title="什么是 CAS"></a>什么是 CAS</h2><p>维基百科的解释是：</p>
+<blockquote>
+<p>In computer science, compare-and-swap (CAS) is an atomic instruction used in multithreading to achieve synchronization. It compares the contents of a memory location with a given value and, only if they are the same, modifies the contents of that memory location to a new given value. This is done as a single atomic operation. The atomicity guarantees that the new value is calculated based on up-to-date information; if the value had been updated by another thread in the meantime, the write would fail. The result of the operation must indicate whether it performed the substitution; this can be done either with a simple boolean response (this variant is often called compare-and-set), or by returning the value read from the memory location (not the value written to it).</p>
+</blockquote>
+<p>CAS(compare and swap)，简单地说就是一种在多线程的情况下，让每个线程修改某个数据是一种原子操作。要实现CAS，有几个关键的值：</p>
+<ol>
+<li>要修改的变量内存中的值V</li>
+<li>更新变量前事先记录的期望值E，取值来自V</li>
+<li>将要更新的值A</li>
+</ol>
+<p>一个典型的CAS更新操作如下：</p>
+<ol>
+<li>读取内存中的值V，赋值给E</li>
+<li>更新变量前，比较内存值V与E</li>
+<li>如果V==E,将V更新成A</li>
+<li>如果V!=E，重复步骤1</li>
+</ol>
+<p>如此循环，直到步骤3更新操作完成，写成伪代码就是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> e=v.getVal();</span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(e==getVal())&#123;</span><br><span class="line">            v.setVal(a);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">while</span>(<span class="keyword">true</span>)</span><br></pre></td></tr></table></figure>
+<p>CAS在JDK中被广泛应用，比如java.util.concurrent包下面的Lock、AtomicInteger相关的类都有用到。<br>例如<code>a++;</code>这种操作在Java里面并不是原子操作（包含了值的累加和赋值两个动作），所以并发情况下竞争操作某一个变量，需要用AtomicXXX几个类。</p>
+<h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p>AtomicInteger 实现类似<code>a++</code>操作，使用的是它的<code>incrementAndGet</code> 方法，源码很简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Atomically increments by one the current value.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">int</span> current = get();</span><br><span class="line">        <span class="keyword">int</span> next = current + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 此处的 compareAndSet 由usafe对象提供硬件级别的原子操作</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lock中对于竞争变量的CAS，也是类似的操作。</p>
+<h2 id="什么是ABA问题"><a href="#什么是ABA问题" class="headerlink" title="什么是ABA问题"></a>什么是ABA问题</h2><p>简单地说就是，多个线程同时使用CAS更新数据时：</p>
+<ol>
+<li>线程1要将数据从A变成B时（此时线程1的期待值E==’A’）</li>
+<li>其他线程已经抢先更新了变量，把变量从A变成其他值，再变回A（如A-&gt;C-&gt;A）。</li>
+<li>当线程1用CAS机制准备更新变量时，发现E==A，所以继续更新变量。</li>
+</ol>
+<h3 id="这样有什么问题？"><a href="#这样有什么问题？" class="headerlink" title="这样有什么问题？"></a>这样有什么问题？</h3><p>虽然变量最终结果是对的，但是线程1更新变量前，变量已经经历了一系列变化才回到原值。对于某些场景，忽略变化会继续进行更新操作，会带来错误的结果。<br>比如：</p>
+<h4 id="银行账户扣费问题"><a href="#银行账户扣费问题" class="headerlink" title="银行账户扣费问题"></a>银行账户扣费问题</h4><p>某个银行账户扣款操作，由于系统故障，产生了2个线程（T1,T2）对同一账户进行扣款，正常防重逻辑应该是一个执行成功，另一个失败，但是如果使用上面的CAS操作，就是：</p>
+<ol>
+<li>账户里有100元，需要扣款50元</li>
+<li>T1先完成操作，扣款50元，将账户值V改为50</li>
+<li>T2准备扣款，当时期待值E==100</li>
+<li>此时有其他转账操作先于T2对V进行累加，比如转入50元，此时V又变成100</li>
+<li>T2进行CAS的更新操作，发现E\==V\==100,执行更新操作，<strong>又扣款50</strong></li>
+</ol>
+<h4 id="堆栈操作问题"><a href="#堆栈操作问题" class="headerlink" title="堆栈操作问题"></a>堆栈操作问题</h4><p>如果CAS中的操作，变量值V是栈顶指针，也会有同样的问题：</p>
+<ol>
+<li>某个堆栈内容是：A-B-C,栈顶为A</li>
+<li>线程1更新前，得到期望值E==A</li>
+<li>其他线程对栈进行进行pop,push操作，pop A B,push D A,此时栈的内容为 A-D-C</li>
+<li>此时栈顶还是A，但是内容已经改变，线程1要更新的堆栈，已经不是第2步拿到期望值E时，自己要操作的那个堆栈了</li>
+</ol>
+<h3 id="如何规避"><a href="#如何规避" class="headerlink" title="如何规避"></a>如何规避</h3><p>思路也很简单，就是对得到的期望值E和变量值V，增加一个版本号（比如时间戳），对于不同时期操作产生的同一个值的V，版本号是不同的，比较E与V时，需要同时比较版本号。比如juc包的<code>AtomicStampedReference</code>实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicStampedReference</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> T reference;  <span class="comment">//维护对象引用</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> stamp;  <span class="comment">//用于标志版本</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Pair</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.reference = reference;</span><br><span class="line">            <span class="keyword">this</span>.stamp = stamp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">static</span> &lt;T&gt; <span class="function">Pair&lt;T&gt; <span class="title">of</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Pair&lt;T&gt;(reference, stamp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Pair&lt;V&gt; pair;</span><br><span class="line">    ....</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * expectedReference ：更新之前的原始值</span></span><br><span class="line"><span class="comment">      * newReference : 将要更新的新值</span></span><br><span class="line"><span class="comment">      * expectedStamp : 期待更新的标志版本</span></span><br><span class="line"><span class="comment">      * newStamp : 将要更新的标志版本</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(V   expectedReference,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 V   newReference,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">int</span> expectedStamp,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">int</span> newStamp)</span> </span>&#123;</span><br><span class="line">        Pair&lt;V&gt; current = pair; <span class="comment">//获取当前pair</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">            expectedReference == current.reference &amp;&amp; <span class="comment">//原始值等于当前pair的值引用，说明值未变化</span></span><br><span class="line">            expectedStamp == current.stamp &amp;&amp; <span class="comment">// 原始标记版本等于当前pair的标记版本，说明标记未变化</span></span><br><span class="line">            ((newReference == current.reference &amp;&amp;</span><br><span class="line">              newStamp == current.stamp) || <span class="comment">// 将要更新的值和标记都没有变化</span></span><br><span class="line">             casPair(current, Pair.of(newReference, newStamp))); <span class="comment">// cas 更新pair</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>CAS 是一种自旋锁，由一个死循环+compareAndSet 实现。</li>
+<li>CAS 存在ABA隐患，对于需要关注竞争变量变化过程（不仅仅是变量的值）的场景，ABA问题必须关注。</li>
+<li>解决ABA问题，需要在CAS的compare过程中，增加对期望值E和当前值V版本号的判断。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://tachikomachann.github.io/2018/10/21/Java中的CAS与ABA问题/" data-id="cki1s49qo0004bkucggst89w8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nas/">nas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树莓派/">树莓派</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/nas/" style="font-size: 10px;">nas</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/web/" style="font-size: 10px;">web</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/树莓派/" style="font-size: 10px;">树莓派</a> <a href="/tags/随笔/" style="font-size: 15px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/11/28/用树莓派4B组件简易NAS/">用树莓派4B组件简易NAS</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/22/SAML-与-SSO/">SAML 与 SSO</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/05/写在三十岁的时候/">写在三十岁的时候</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/16/Java-多线程笔记/">Java 多线程笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2019/09/05/Java-NIO-笔记/">Java NIO 笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Tachikoma<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
