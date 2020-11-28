@@ -1,12 +1,25 @@
 <!DOCTYPE html>
-<html>
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="utf-8">
-  
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.8.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-  
-  <title>用树莓派4B组件简易NAS | タチコマの部屋</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"tachikomachann.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
   <meta name="description" content="最近尝试用树莓派和两块硬盘搭建了简易的NAS服务，稳定运行了几周，感觉还不错。今天把自己折腾的过程记录一下。 我对NAS的需求 2T左右的空间 个人多媒体库（我没有屯片习惯，主要是听歌和偶尔下载一些片子来看） 管理家庭照片（我和我老婆手机的照片） 备份 增量备份到老硬盘 异地备份到公有云（其实就是百度云） 定时备份系统，可快速还原系统   外网访问：查看文件，听音乐，看照片 用家里电视盒子看视频">
 <meta name="keywords" content="nas,树莓派">
 <meta property="og:type" content="article">
@@ -32,73 +45,162 @@
 <meta name="twitter:title" content="用树莓派4B组件简易NAS">
 <meta name="twitter:description" content="最近尝试用树莓派和两块硬盘搭建了简易的NAS服务，稳定运行了几周，感觉还不错。今天把自己折腾的过程记录一下。 我对NAS的需求 2T左右的空间 个人多媒体库（我没有屯片习惯，主要是听歌和偶尔下载一些片子来看） 管理家庭照片（我和我老婆手机的照片） 备份 增量备份到老硬盘 异地备份到公有云（其实就是百度云） 定时备份系统，可快速还原系统   外网访问：查看文件，听音乐，看照片 用家里电视盒子看视频">
 <meta name="twitter:image" content="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/nextcloud_home_page.png">
-  
-    <link rel="alternate" href="/atom.xml" title="タチコマの部屋" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-</html>
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">タチコマの部屋</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://tachikomachann.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-用树莓派4B组件简易NAS" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/11/28/用树莓派4B组件简易NAS/" class="article-date">
-  <time datetime="2020-11-28T13:42:04.000Z" itemprop="datePublished">2020-11-28</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      用树莓派4B组件简易NAS
-    </h1>
+
+<link rel="canonical" href="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>用树莓派4B组件简易NAS | タチコマの部屋</title>
   
 
-      </header>
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">タチコマの部屋</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
     
-    <div class="article-entry" itemprop="articleBody">
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tachikoma">
+      <meta itemprop="description" content="Less is more">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="タチコマの部屋">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用树莓派4B组件简易NAS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-28 21:42:04 / 修改时间：21:52:34" itemprop="dateCreated datePublished" datetime="2020-11-28T21:42:04+08:00">2020-11-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
         <p>最近尝试用树莓派和两块硬盘搭建了简易的NAS服务，稳定运行了几周，感觉还不错。今天把自己折腾的过程记录一下。</p>
 <h2 id="我对NAS的需求"><a href="#我对NAS的需求" class="headerlink" title="我对NAS的需求"></a>我对NAS的需求</h2><ol>
@@ -247,131 +349,184 @@
 <p>上面的配置主要是为了重写Nextcloud的baseurl，大部分情况下Nextcloud都能通过客户端访问的情况，在需要的时候拼接出Nextcloud站点的地址（比如生成WebDAV url的时候）。但有时候会失误，比如目前我的HTTPS方案，它会识别不了我是HTTPS访问的，拼接出来的WebDAV url还是http开头的，上面的配置就是告诉Nextcloud，用户访问来源是192.168.123.222（我装有frpc的路由器ip），他是https协议的，为他生成的url必须用https的。</p>
 <h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成"></a>大功告成</h2><p>说实话，花了一个国庆假期搞的这套树莓派NAS，其实不算是NAS，只是一个自建的网盘和文件服务器。但是它基本满足了我们家目前对NAS的需求。自从搭完以来，两块硬盘一个树莓派放在角落里基本没在管它，每天检查一下Server酱的定时计划执行结果，自动备份照片，偶尔听听歌，放个片子，不用在纠结各家音乐服务的会员，感觉还是很不错的。</p>
 
-      
     </div>
-    <footer class="article-footer">
-      <a data-url="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/" data-id="cki1s49rq000vbkuc3azhdi6i" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nas/">nas</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/树莓派/">树莓派</a></li></ul>
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nas/" rel="tag"># nas</a>
+              <a href="/tags/树莓派/" rel="tag"># 树莓派</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/22/SAML-与-SSO/" rel="prev" title="SAML 与 SSO">
+      <i class="fa fa-chevron-left"></i> SAML 与 SSO
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#我对NAS的需求"><span class="nav-number">1.</span> <span class="nav-text">我对NAS的需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#购物清单"><span class="nav-number">2.</span> <span class="nav-text">购物清单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组建NAS"><span class="nav-number">3.</span> <span class="nav-text">组建NAS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统安装"><span class="nav-number">3.1.</span> <span class="nav-text">系统安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Nextcloud"><span class="nav-number">3.2.</span> <span class="nav-text">安装Nextcloud</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于Nextcloud的一些Troubleshooting"><span class="nav-number">3.3.</span> <span class="nav-text">关于Nextcloud的一些Troubleshooting</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#错误信息：您的数据目录可被其他用户读取，请更改权限为-0770-以避免其他用户查看目录"><span class="nav-number">3.3.1.</span> <span class="nav-text">错误信息：您的数据目录可被其他用户读取，请更改权限为 0770 以避免其他用户查看目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接拷贝文件到-Nextcloud-用户的files目录里，在Nextcloud识别不到"><span class="nav-number">3.3.2.</span> <span class="nav-text">直接拷贝文件到 Nextcloud 用户的files目录里，在Nextcloud识别不到</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#备份Nextcloud-的DB"><span class="nav-number">3.3.3.</span> <span class="nav-text">备份Nextcloud 的DB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加上反向代理（外网访问有用）"><span class="nav-number">3.3.4.</span> <span class="nav-text">加上反向代理（外网访问有用）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#端到端加密"><span class="nav-number">3.3.5.</span> <span class="nav-text">端到端加密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#听歌"><span class="nav-number">3.3.6.</span> <span class="nav-text">听歌</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#针对这个树莓派NAS的一些其他设置"><span class="nav-number">3.4.</span> <span class="nav-text">针对这个树莓派NAS的一些其他设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#开机挂载硬盘"><span class="nav-number">3.4.1.</span> <span class="nav-text">开机挂载硬盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用千兆交换机，升级内网传输速度"><span class="nav-number">3.4.2.</span> <span class="nav-text">使用千兆交换机，升级内网传输速度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开启SMB服务"><span class="nav-number">3.4.3.</span> <span class="nav-text">开启SMB服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定时开关机"><span class="nav-number">3.4.4.</span> <span class="nav-text">定时开关机</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份方案"><span class="nav-number">3.5.</span> <span class="nav-text">备份方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用rsync增量本分数据到备份硬盘"><span class="nav-number">3.5.1.</span> <span class="nav-text">使用rsync增量本分数据到备份硬盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#全量备份树莓派系统"><span class="nav-number">3.5.2.</span> <span class="nav-text">全量备份树莓派系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用百度网盘做为公有云备份"><span class="nav-number">3.5.3.</span> <span class="nav-text">使用百度网盘做为公有云备份</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置Cron定时计划"><span class="nav-number">3.5.4.</span> <span class="nav-text">配置Cron定时计划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用Server酱发送通知到手机"><span class="nav-number">3.5.5.</span> <span class="nav-text">使用Server酱发送通知到手机</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外网访问"><span class="nav-number">3.6.</span> <span class="nav-text">外网访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#买云主机"><span class="nav-number">3.6.1.</span> <span class="nav-text">买云主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用frp搭建内网穿透服务"><span class="nav-number">3.6.2.</span> <span class="nav-text">用frp搭建内网穿透服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#申请域名和证书"><span class="nav-number">3.6.3.</span> <span class="nav-text">申请域名和证书</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大功告成"><span class="nav-number">4.</span> <span class="nav-text">大功告成</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Tachikoma</p>
+  <div class="site-description" itemprop="description">Less is more</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tachikoma</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
     </footer>
   </div>
-  
-    
-<nav id="article-nav">
-  
-  
-    <a href="/2019/12/22/SAML-与-SSO/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">SAML 与 SSO</div>
-    </a>
-  
-</nav>
 
   
-</article>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
 
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nas/">nas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nio/">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/树莓派/">树莓派</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
-    </div>
-  </div>
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/nas/" style="font-size: 10px;">nas</a> <a href="/tags/nio/" style="font-size: 10px;">nio</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/web/" style="font-size: 10px;">web</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/树莓派/" style="font-size: 10px;">树莓派</a> <a href="/tags/随笔/" style="font-size: 15px;">随笔</a>
-    </div>
-  </div>
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul>
-    </div>
-  </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2020/11/28/用树莓派4B组件简易NAS/">用树莓派4B组件简易NAS</a>
-          </li>
-        
-          <li>
-            <a href="/2019/12/22/SAML-与-SSO/">SAML 与 SSO</a>
-          </li>
-        
-          <li>
-            <a href="/2019/11/05/写在三十岁的时候/">写在三十岁的时候</a>
-          </li>
-        
-          <li>
-            <a href="/2019/09/16/Java-多线程笔记/">Java 多线程笔记</a>
-          </li>
-        
-          <li>
-            <a href="/2019/09/05/Java-NIO-笔记/">Java NIO 笔记</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
 
   
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2020 Tachikoma<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-
-
-  </div>
 </body>
 </html>
