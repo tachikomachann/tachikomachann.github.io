@@ -148,6 +148,123 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2018/10/21/Java中的CAS与ABA问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tachikoma">
+      <meta itemprop="description" content="Less is more">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="タチコマの部屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/10/21/Java中的CAS与ABA问题/" class="post-title-link" itemprop="url">Java中的CAS与ABA问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-10-21 20:01:00" itemprop="dateCreated datePublished" datetime="2018-10-21T20:01:00+08:00">2018-10-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-28 17:20:52" itemprop="dateModified" datetime="2020-11-28T17:20:52+08:00">2020-11-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天面试别人的时候，提到了CAS，本来想要引导他说出CAS潜在的ABA问题，发现自己也没发简单的向他解释清楚,需要好好梳理下。</p>
+<h2 id="什么是-CAS"><a href="#什么是-CAS" class="headerlink" title="什么是 CAS"></a>什么是 CAS</h2><p>维基百科的解释是：</p>
+<blockquote>
+<p>In computer science, compare-and-swap (CAS) is an atomic instruction used in multithreading to achieve synchronization. It compares the contents of a memory location with a given value and, only if they are the same, modifies the contents of that memory location to a new given value. This is done as a single atomic operation. The atomicity guarantees that the new value is calculated based on up-to-date information; if the value had been updated by another thread in the meantime, the write would fail. The result of the operation must indicate whether it performed the substitution; this can be done either with a simple boolean response (this variant is often called compare-and-set), or by returning the value read from the memory location (not the value written to it).</p>
+</blockquote>
+<p>CAS(compare and swap)，简单地说就是一种在多线程的情况下，让每个线程修改某个数据是一种原子操作。要实现CAS，有几个关键的值：</p>
+<ol>
+<li>要修改的变量内存中的值V</li>
+<li>更新变量前事先记录的期望值E，取值来自V</li>
+<li>将要更新的值A</li>
+</ol>
+<p>一个典型的CAS更新操作如下：</p>
+<ol>
+<li>读取内存中的值V，赋值给E</li>
+<li>更新变量前，比较内存值V与E</li>
+<li>如果V==E,将V更新成A</li>
+<li>如果V!=E，重复步骤1</li>
+</ol>
+<p>如此循环，直到步骤3更新操作完成，写成伪代码就是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> e=v.getVal();</span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(e==getVal())&#123;</span><br><span class="line">            v.setVal(a);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">while</span>(<span class="keyword">true</span>)</span><br></pre></td></tr></table></figure>
+<p>CAS在JDK中被广泛应用，比如java.util.concurrent包下面的Lock、AtomicInteger相关的类都有用到。<br>例如<code>a++;</code>这种操作在Java里面并不是原子操作（包含了值的累加和赋值两个动作），所以并发情况下竞争操作某一个变量，需要用AtomicXXX几个类。</p>
+<h3 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h3><p>AtomicInteger 实现类似<code>a++</code>操作，使用的是它的<code>incrementAndGet</code> 方法，源码很简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Atomically increments by one the current value.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">int</span> current = get();</span><br><span class="line">        <span class="keyword">int</span> next = current + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 此处的 compareAndSet 由usafe对象提供硬件级别的原子操作</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lock中对于竞争变量的CAS，也是类似的操作。</p>
+<h2 id="什么是ABA问题"><a href="#什么是ABA问题" class="headerlink" title="什么是ABA问题"></a>什么是ABA问题</h2><p>简单地说就是，多个线程同时使用CAS更新数据时：</p>
+<ol>
+<li>线程1要将数据从A变成B时（此时线程1的期待值E==’A’）</li>
+<li>其他线程已经抢先更新了变量，把变量从A变成其他值，再变回A（如A-&gt;C-&gt;A）。</li>
+<li>当线程1用CAS机制准备更新变量时，发现E==A，所以继续更新变量。</li>
+</ol>
+<h3 id="这样有什么问题？"><a href="#这样有什么问题？" class="headerlink" title="这样有什么问题？"></a>这样有什么问题？</h3><p>虽然变量最终结果是对的，但是线程1更新变量前，变量已经经历了一系列变化才回到原值。对于某些场景，忽略变化会继续进行更新操作，会带来错误的结果。<br>比如：</p>
+<h4 id="银行账户扣费问题"><a href="#银行账户扣费问题" class="headerlink" title="银行账户扣费问题"></a>银行账户扣费问题</h4><p>某个银行账户扣款操作，由于系统故障，产生了2个线程（T1,T2）对同一账户进行扣款，正常防重逻辑应该是一个执行成功，另一个失败，但是如果使用上面的CAS操作，就是：</p>
+<ol>
+<li>账户里有100元，需要扣款50元</li>
+<li>T1先完成操作，扣款50元，将账户值V改为50</li>
+<li>T2准备扣款，当时期待值E==100</li>
+<li>此时有其他转账操作先于T2对V进行累加，比如转入50元，此时V又变成100</li>
+<li>T2进行CAS的更新操作，发现E\==V\==100,执行更新操作，<strong>又扣款50</strong></li>
+</ol>
+<h4 id="堆栈操作问题"><a href="#堆栈操作问题" class="headerlink" title="堆栈操作问题"></a>堆栈操作问题</h4><p>如果CAS中的操作，变量值V是栈顶指针，也会有同样的问题：</p>
+<ol>
+<li>某个堆栈内容是：A-B-C,栈顶为A</li>
+<li>线程1更新前，得到期望值E==A</li>
+<li>其他线程对栈进行进行pop,push操作，pop A B,push D A,此时栈的内容为 A-D-C</li>
+<li>此时栈顶还是A，但是内容已经改变，线程1要更新的堆栈，已经不是第2步拿到期望值E时，自己要操作的那个堆栈了</li>
+</ol>
+<h3 id="如何规避"><a href="#如何规避" class="headerlink" title="如何规避"></a>如何规避</h3><p>思路也很简单，就是对得到的期望值E和变量值V，增加一个版本号（比如时间戳），对于不同时期操作产生的同一个值的V，版本号是不同的，比较E与V时，需要同时比较版本号。比如juc包的<code>AtomicStampedReference</code>实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicStampedReference</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> T reference;  <span class="comment">//维护对象引用</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> stamp;  <span class="comment">//用于标志版本</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Pair</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.reference = reference;</span><br><span class="line">            <span class="keyword">this</span>.stamp = stamp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">static</span> &lt;T&gt; <span class="function">Pair&lt;T&gt; <span class="title">of</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Pair&lt;T&gt;(reference, stamp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Pair&lt;V&gt; pair;</span><br><span class="line">    ....</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * expectedReference ：更新之前的原始值</span></span><br><span class="line"><span class="comment">      * newReference : 将要更新的新值</span></span><br><span class="line"><span class="comment">      * expectedStamp : 期待更新的标志版本</span></span><br><span class="line"><span class="comment">      * newStamp : 将要更新的标志版本</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(V   expectedReference,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 V   newReference,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">int</span> expectedStamp,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">int</span> newStamp)</span> </span>&#123;</span><br><span class="line">        Pair&lt;V&gt; current = pair; <span class="comment">//获取当前pair</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">            expectedReference == current.reference &amp;&amp; <span class="comment">//原始值等于当前pair的值引用，说明值未变化</span></span><br><span class="line">            expectedStamp == current.stamp &amp;&amp; <span class="comment">// 原始标记版本等于当前pair的标记版本，说明标记未变化</span></span><br><span class="line">            ((newReference == current.reference &amp;&amp;</span><br><span class="line">              newStamp == current.stamp) || <span class="comment">// 将要更新的值和标记都没有变化</span></span><br><span class="line">             casPair(current, Pair.of(newReference, newStamp))); <span class="comment">// cas 更新pair</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>CAS 是一种自旋锁，由一个死循环+compareAndSet 实现。</li>
+<li>CAS 存在ABA隐患，对于需要关注竞争变量变化过程（不仅仅是变量的值）的场景，ABA问题必须关注。</li>
+<li>解决ABA问题，需要在CAS的compare过程中，增加对期望值E和当前值V版本号的判断。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2018/10/05/2018-10西安游/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -547,13 +664,13 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
