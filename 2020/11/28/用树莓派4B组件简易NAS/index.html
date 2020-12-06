@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/switch2.png">
 <meta property="og:image" content="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/rsync1.png">
 <meta property="og:image" content="https://tachikomachann.github.io/2020/11/28/用树莓派4B组件简易NAS/rsync2.png">
-<meta property="og:updated_time" content="2020-11-28T13:52:34.431Z">
+<meta property="og:updated_time" content="2020-12-06T11:51:02.070Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用树莓派4B组件简易NAS">
 <meta name="twitter:description" content="最近尝试用树莓派和两块硬盘搭建了简易的NAS服务，稳定运行了几周，感觉还不错。今天把自己折腾的过程记录一下。 我对NAS的需求 2T左右的空间 个人多媒体库（我没有屯片习惯，主要是听歌和偶尔下载一些片子来看） 管理家庭照片（我和我老婆手机的照片） 备份 增量备份到老硬盘 异地备份到公有云（其实就是百度云） 定时备份系统，可快速还原系统   外网访问：查看文件，听音乐，看照片 用家里电视盒子看视频">
@@ -186,10 +186,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-11-28 21:42:04 / 修改时间：21:52:34" itemprop="dateCreated datePublished" datetime="2020-11-28T21:42:04+08:00">2020-11-28</time>
+              <time title="创建时间：2020-11-28 21:42:04" itemprop="dateCreated datePublished" datetime="2020-11-28T21:42:04+08:00">2020-11-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-06 19:51:02" itemprop="dateModified" datetime="2020-12-06T19:51:02+08:00">2020-12-06</time>
+              </span>
 
           
 
@@ -229,6 +235,7 @@
 <li>小米wifi插座（定时开关机用）（40元）</li>
 <li>水星（MERCURY）SG105M 5口千兆交换机 （52元）</li>
 </ol>
+<a id="more"></a> 
 <h2 id="组建NAS"><a href="#组建NAS" class="headerlink" title="组建NAS"></a>组建NAS</h2><p>趁着树莓派到货的间隙，查了许多有关树莓派搭建NAS的资料。其实按照目前的需求，我只需要一个网盘系统然后能够兼顾外网文件访问即可。网盘大家用的比较多的有Nextcloud和Seafile两个方案。一开始试过Seafile，发现一是安装太繁琐；二是它的文件是以块存储的方式，硬盘拆下来后，没办法绕过Seafile直接读取文件。最后决定使用Linux系统+Nextcloud作为个人网盘。</p>
 <h3 id="系统安装"><a href="#系统安装" class="headerlink" title="系统安装"></a>系统安装</h3><p>树莓派支持的系统挺多的，由于之前用过一段时间Manjaro，对它有点好感，刚好它也有支持树莓派的镜像，索性就用Manjaro作为我的树莓派操作系统。PS: 不要以为可以跟桌面版Manjaro一样使用海量的AUR仓库里的软件，用到后面其实我发现，很多软件都没有对应arm的版本。选Manjaro单纯是因为我习惯了这个发行版。:)</p>
 <p>安装过程跟树莓派其他系统大同小异：</p>
