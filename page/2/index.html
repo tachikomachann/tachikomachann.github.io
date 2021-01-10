@@ -148,6 +148,182 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2018/11/17/Practical Vim 读书笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tachikoma">
+      <meta itemprop="description" content="Less is more">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="タチコマの部屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/17/Practical Vim 读书笔记/" class="post-title-link" itemprop="url">Practical Vim 读书笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-11-17 19:34:00" itemprop="dateCreated datePublished" datetime="2018-11-17T19:34:00+08:00">2018-11-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-28 17:20:52" itemprop="dateModified" datetime="2020-11-28T17:20:52+08:00">2020-11-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>刚工作的时候，看了王垠的一篇《编辑器之神和神之编辑器》，便落入了使用vim的深坑。工作了那么多年发现每个一段时间重新看vim东西总能学到新的知识，最近快速读完了《Practical Vim》,在这里把一些以前没注意的小技巧再重新整理一下。</p>
+<h2 id="normal-mode"><a href="#normal-mode" class="headerlink" title="normal mode"></a>normal mode</h2><ul>
+<li><code>R</code>进入逐字替换</li>
+<li>用<code>f{char}</code>搜索某个字符（比如c），按<code>;</code>可以跳到下一个c位置，按<code>,</code>跳到上一个c</li>
+<li>使用相对行号时，如何删除当前行开始向下数3行的内容? <code>d3j</code></li>
+<li><code>q/</code>  查看使用<code>/</code>搜索过的历史命令</li>
+<li><code>q:</code> 查看 ex 命令历史</li>
+<li><code>m{char}</code>  标记位置，<code>`{char}</code> 调整到标记位置，其中<code>{char}</code>用<strong>小写字母</strong>是文件内标记，用<strong>大写字母</strong>是全局标记（可以在文件之间跳转）</li>
+<li><strong>0（数字0）</strong>是复制专用寄存器，只有y命令会覆盖它，使用y命令后，”0p可以黏贴寄存器内容。覆盖无名寄存器的操作（x,c,d等）不会覆盖0寄存器</li>
+</ul>
+<h2 id="insert-mode"><a href="#insert-mode" class="headerlink" title="insert mode"></a>insert mode</h2><ul>
+<li><code>&lt;C-r&gt;{register}</code>   直接输出寄存器的值,比如<code>&lt;C-r&gt;a</code>是输出a寄存器内容</li>
+<li><code>&lt;C-r&gt;=6*35&lt;CR&gt;</code>  使用表达式寄存器=，计算6*35的值并输出</li>
+</ul>
+<h2 id="virtual-mode"><a href="#virtual-mode" class="headerlink" title="virtual mode"></a>virtual mode</h2><ul>
+<li><code>v</code>高亮选择文本，<code>gv</code>重选上次高亮选区</li>
+<li>高亮选中文本后，按<code>o</code>可以将光标在高亮文本起始末尾跳转，方便调整高亮文本</li>
+</ul>
+<h2 id="Ex-command-mode"><a href="#Ex-command-mode" class="headerlink" title="Ex command mode"></a>Ex command mode</h2><ul>
+<li><code>[range] m {address}</code>  把[range] 范围的文本移动到{address}</li>
+<li><code>[range] t {address}</code>  把[range] 范围的文本复制到{address}</li>
+<li><code>&lt;C-r&gt;{register}</code> 在命令行黏贴寄存器内容</li>
+<li><code>[range] normal {command</code>} 使用命令行执行普通模式命令，如 <code>% normal A;</code>  会在所有行后面追加字符<strong>;</strong></li>
+<li>重复上一次执行的Ex 命令，使用 <code>@:</code></li>
+<li><code>&lt;C-d&gt;</code> 显示可用命令列表，<code>Tab</code>补全命令</li>
+<li><code>&lt;C-r&gt;&lt;C-w&gt;</code>插入当前光标下的单词到编辑的command中</li>
+</ul>
+<p>[range]  范围语法支持：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>文本第一行</td>
+</tr>
+<tr>
+<td>$</td>
+<td>文本的最后一行</td>
+</tr>
+<tr>
+<td>0</td>
+<td>虚拟行，位于文本第一行上方</td>
+</tr>
+<tr>
+<td>.</td>
+<td>光标所在行</td>
+</tr>
+<tr>
+<td>‘m</td>
+<td>位置标记m所在行</td>
+</tr>
+<tr>
+<td>‘&lt;</td>
+<td>高亮选区的起始行</td>
+</tr>
+<tr>
+<td>‘&gt;</td>
+<td>高亮选区的结束行</td>
+</tr>
+<tr>
+<td>%</td>
+<td>整个文件</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>允许使用<code>+{number}</code>，<code>-{number}</code>对[range]进行偏移</li>
+<li>[range] 也支持使用模式匹配</li>
+</ol>
+<h2 id="Macro-（宏）"><a href="#Macro-（宏）" class="headerlink" title="Macro （宏）"></a>Macro （宏）</h2><p>录制宏:</p>
+<ol>
+<li><code>q{register}</code> 开启录制</li>
+<li>录入宏的内容</li>
+<li><code>q</code>结束录制</li>
+</ol>
+<p>调用宏：<code>@{register}</code><br>批量调用： <code>n@{register}</code>   ,这里n是执行宏的次数<br>向录制好的宏追加内容： 用 <code>q{register大写}</code> 开始录制，录制后的内容会追加到原来的宏后面。比如原来用 <code>qa</code> 录制了 <code>dwi</code> 操作，想要再后面加<code>j</code>，可以：</p>
+<ol>
+<li>用 <code>qA</code> 开启宏a的追加</li>
+<li>录制<code>j</code></li>
+<li>按<code>q</code>结束录制</li>
+<li>此时<code>@a</code>执行的操作就是<code>dwij</code></li>
+</ol>
+<p>编辑宏:<br>宏用的寄存器和复制黏贴的寄存器是一样的，需要编辑好录制的宏，可以先将寄存器输出，编辑后复制到寄存器中，继续用<code>@{register}</code>执行宏。比如原来寄存器<code>a</code>录制的宏是<code>dwij</code>，现在想要改成<code>dwi2j</code>，可以：</p>
+<ol>
+<li>在normal mode下，”ap 黏贴出宏内容 dwij </li>
+<li>将内容改成 dwi2j</li>
+<li>选中文本，y”a 覆盖寄存器a内容</li>
+<li>再执行@a，操作就是 dwi2j了</li>
+</ol>
+<h2 id="Pattern-模式匹配"><a href="#Pattern-模式匹配" class="headerlink" title="Pattern 模式匹配"></a>Pattern 模式匹配</h2><p>vim 的 search(搜索)，substitute(替换)命令都支持Pattern，也就是正则表达式匹配<br>默认情况下，<code>/</code> 搜索模式的正则表达式，正则表达式的元字符 <code>.*()</code>等，都需要加<code>\</code>转义，也就是在默认情况下<code>/.*</code>搜索的是 <code>.*</code>字符串，而不是<strong>任意个</strong>字符</p>
+<p>magic:<br>在搜索表达式前加<code>\m</code>使用magic功能，除了 <code>$.*^</code>之外的元字符要加反斜杠，如<code>\m.*</code>搜索的就是任意字符，若不是<code>.*</code>字符串</p>
+<p>very magic:<br>在搜索表达式前<code>\v</code>使用very magic 功能，正则表达式任何元字符都不用加<code>\</code>，如：<code>/\v(a.c){3}$</code>  就是查找行尾三个字符是<strong>a{char}c</strong>的表表达式(如abc,acc,aec)。</p>
+<p>强制关闭magic:<br>如果已经<code>set magic</code>，要在搜索表达式里强制不用magic，就在前面加<code>\V</code>,比如已经开启了<code>set magic</code>，使用 <code>/\V.*</code>搜索的是<code>.*</code>字符串。</p>
+<p>单词界定：<br>在very magic 模式下，使用<code>&lt;word&gt;</code>可以以单词为界匹配字符，而不会匹配到其他内容。比如目前有个文本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">abc aa</span><br><span class="line">abcdedf</span><br><span class="line">1234</span><br><span class="line">123abc</span><br></pre></td></tr></table></figure></p>
+<p>用 <code>/\v&lt;abc&gt;</code>搜索时，只有第一行 <code>abc</code> 匹配，<code>123abc</code>不会匹配。</p>
+<p>模式匹配边界：<br>一个匹配的边界通常对应于一个模式的起始与结尾。但我们可以使用元字符 <code>\zs</code> 与 <code>\ze</code>对匹配进行裁剪，使其成为这个完整模式的一个子集（参见 :h /\zs ） 。元 字符 <code>\zs</code>标志着一个匹配的起始，而元字符<code>\ze</code>则用来界定匹配的结束。将二者相结合，我们可以定义一个特殊的模式，它们可以让我们定义一个模式匹配一个较大的文本范围，然后再收窄匹配范围。与单词定界符类似，<code>\zs</code>与<code>\ze</code> 均为零宽度元字符。 </p>
+<p>vim中模式的特殊元字符 ，<code>\zs</code> 与<code>\ze</code>关键字示例：<br><img src="http://ww1.sinaimg.cn/large/720db05fgy1fxbbtpdsb4j20ew0383yi.jpg" alt></p>
+<p>必须转义的情况：</p>
+<ol>
+<li>正向查找时，<code>/</code>必须转义。</li>
+<li>反向查找时，<code>?</code>必须转义。</li>
+<li>每次都要转义<code>\</code>。</li>
+</ol>
+<p>查找&amp;替换<br>显示当前查找关键词个数： <code>:%s///gn</code></p>
+<p>将光标定位到匹配结果词尾：<code>/lang/e</code> </p>
+<p>重用上次查找的模式<br><code>:%s/\va.c/123/g</code><br>等价于以下两个命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/\v.c</span><br><span class="line">%s//123/g</span><br></pre></td></tr></table></figure></p>
+<h2 id="global-命令"><a href="#global-命令" class="headerlink" title="global 命令"></a>global 命令</h2><p>:global命令的广义形式如下所示：<br><code>:g/{pattern}/[range][cmd]</code><br><code>:g/{re}/{cmd}</code>  在匹配的行上执行命令，如 <code>:g/re/d</code>  ，删除包含re字符的行<br><code>:v/{re}/{cmd}</code>  在非匹配的行上执行命令  如 <code>:v/re/d</code>  ，删除<strong>不包含</strong>re字符的行</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2018/10/21/Java中的CAS与ABA问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -664,13 +840,13 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -697,7 +873,7 @@ end
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
