@@ -148,6 +148,72 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2021/02/21/Java中的volatile关键字总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tachikoma">
+      <meta itemprop="description" content="Less is more">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="タチコマの部屋">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/21/Java中的volatile关键字总结/" class="post-title-link" itemprop="url">Java中的volatile关键字总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-21 14:55:29 / 修改时间：16:49:08" itemprop="dateCreated datePublished" datetime="2021-02-21T14:55:29+08:00">2021-02-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Java 中的volatile 关键字主要是用于处理并发场景下多线程访问共享变量的内存屏障（Memory Fence/Memory Barrier）问题。经常与同步块sychronized配合使用，因此很多人想到并发就想到它，但是它其实不是用来解决共享变量的问题。以前对它的理解也是浑浑噩噩，今天这里做一下系统性的梳理。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/21/Java中的volatile关键字总结/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2021/02/10/我的中医观/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1033,71 +1099,6 @@ SAMLRequest=request&amp;RelayState=token
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://tachikomachann.github.io/2019/06/15/关于方法论/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Tachikoma">
-      <meta itemprop="description" content="Less is more">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="タチコマの部屋">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/06/15/关于方法论/" class="post-title-link" itemprop="url">关于方法论</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-06-15 11:11:00" itemprop="dateCreated datePublished" datetime="2019-06-15T11:11:00+08:00">2019-06-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-28 17:20:52" itemprop="dateModified" datetime="2020-11-28T17:20:52+08:00">2020-11-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>很多离职的小伙伴都喜欢吐槽前公司是个方法论公司，大佬喜欢大谈方法论，晋升答辩除了工作内容之外，有一项考核就是影响力价值观输出。这样有什么问题呢？作为曾经的一线研发，我觉得问题在于这些抽象上，概念上，甚至鸡汤般的东西，有时候不能解决基层员工的痛点。方法论是个好东西，是我们工作经验的提炼，总结，淡淡方法论对于怎么高效工作，管理团队有指导意义。但是对于基层员工，他们每天面临着公司最脏，最累，最烦琐的工作，有些人又是讨好型人格不懂拒绝，于是就很容易陷入穷忙的死循环。这时候你跟他们大谈方法论，说要注意工作的轻重缓急，及时汇报，懂得拒绝，不要事情都一个人抗，学会减少重复劳动巴拉巴拉。但是要知道，工作都是上面安排的，他已经是最一线的员工，没人能转手了，这种情况下其实已经分身乏术。过于注重方法论输出的另一个问题就是容易产生骗子，以晋升为例，来自各部门的评委们在几十分钟的答辩内，是否真的能真实了解一个人工作产出？对于那些晋升成功的，和他合作的同事心里真实评价如何？脉脉上吐槽做着低P的工作，像个高P一样高谈阔论这种事，肯定是存在的。看着别人没多少产出就能顺利晋级，那些每天累死累活的人会怎么想，既没有加薪，又没有晋升，干的又不开心，负面能量不断累积，想来想去也只有愤然离职这一条路。最终就是铁打的领导流水的兵，然后领导继续给新员工灌输方法论，新员工受不了后继续跑路。<br>所以我觉得，方法论也好，鸡汤也罢，这都是管理团队提高效率需要的技能。但是落到具体员工身上上，老板们也需要关注下下面人真正的痛点是什么，应该怎么改善。毕竟鸡汤也只是偶尔补补身子用的，一日三餐才是大多数人面临的人生问题。<br>当然，如果把底下人当成几年一换的耗材，上面说的就都是废话了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1167,7 +1168,7 @@ SAMLRequest=request&amp;RelayState=token
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
